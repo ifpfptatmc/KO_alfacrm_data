@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  fetch-update:
+  fetch-customers:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,8 +24,9 @@ jobs:
     - name: Run fetch_customers script
       run: python fetch_customers.py
       env:
-        ACCESS_TOKEN: ${{ secrets.ALPHA_CRM_API_KEY }}
-        AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
+        ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
+        ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
+        ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
     - name: Commit and push changes
       run: |
