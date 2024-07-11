@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  fetch-customers:
+  fetch-update:
     runs-on: ubuntu-latest
 
     steps:
