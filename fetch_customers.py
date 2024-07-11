@@ -3,9 +3,9 @@ import csv
 import os
 
 # Данные для авторизации
-email = os.getenv('ALPHA_CRM_EMAIL')
-api_key = os.getenv('ALPHA_CRM_API_KEY')
-hostname = os.getenv('ALPHA_CRM_HOSTNAME')
+email = os.getenv('EMAIL')
+api_key = os.getenv('API_KEY')
+hostname = os.getenv('HOSTNAME')
 
 # URL для авторизации
 auth_url = f'https://{hostname}/v2api/auth/login'
@@ -49,20 +49,13 @@ if response.status_code == 200:
         customer_ids = [customer['id'] for customer in customers]
         print('Список ID клиентов на стадии с ID 2:', customer_ids)
         
-        # Сохранение результатов в CSV файл
-        csv_file_path = 'customers_stage_2.csv'
-        print(f'Сохранение результатов в файл {csv_file_path}')
-        
-        try:
-            with open(csv_file_path, mode='w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(['Customer ID'])
-                for customer_id in customer_ids:
-                    writer.writerow([customer_id])
-            print(f'Результаты успешно сохранены в файл {csv_file_path}')
-        except Exception as e:
-            print(f'Ошибка при сохранении файла: {e}')
-                
+        # Запись данных в CSV файл
+        with open('customers_stage_2.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Customer ID'])
+            for customer_id in customer_ids:
+                writer.writerow([customer_id])
+        print("Данные успешно экспортированы в customers_stage_2.csv")
     else:
         print('Ошибка получения списка клиентов:', response.text)
 else:
