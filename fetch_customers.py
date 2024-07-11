@@ -1,5 +1,5 @@
 import requests
-import json
+import csv
 import os
 
 # Данные для авторизации
@@ -48,6 +48,16 @@ if response.status_code == 200:
         customers = response.json().get('items', [])
         customer_ids = [customer['id'] for customer in customers]
         print('Список ID клиентов на стадии с ID 2:', customer_ids)
+        
+        # Сохранение результатов в CSV файл
+        csv_file_path = 'customers_stage_2.csv'
+        with open(csv_file_path, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Customer ID'])
+            for customer_id in customer_ids:
+                writer.writerow([customer_id])
+                
+        print(f'Результаты сохранены в файл {csv_file_path}')
     else:
         print('Ошибка получения списка клиентов:', response.text)
 else:
