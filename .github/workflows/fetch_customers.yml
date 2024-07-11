@@ -28,6 +28,10 @@ jobs:
         ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
+    - name: Ensure CSV file exists
+      run: |
+        ls -l customers_stage_2.csv
+
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
@@ -36,5 +40,5 @@ jobs:
         git commit -m 'Updated customer data'
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
       continue-on-error: true
