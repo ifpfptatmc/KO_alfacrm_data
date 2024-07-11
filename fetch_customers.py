@@ -2,60 +2,50 @@ import requests
 import csv
 import os
 
-# Данные для авторизации
-email = os.getenv('ALPHA_CRM_EMAIL')
-api_key = os.getenv('ALPHA_CRM_API_KEY')
-hostname = os.getenv('ALPHA_CRM_HOSTNAME')
+def fetch_data():
+    email = os.getenv('ALPHA_CRM_EMAIL')
+    api_key = os.getenv('ALPHA_CRM_API_KEY')
+    hostname = os.getenv('ALPHA_CRM_HOSTNAME')
 
-# URL для авторизации
-auth_url = f'https://{hostname}/v2api/auth/login'
+    # URL для авторизации
+    auth_url = f'https://{hostname}/v2api/auth/login'
+    auth_data = {'email': email, 'api_key': api_key}
 
-# Данные для запроса
-auth_data = {
-    'email': email,
-    'api_key': api_key
-}
-
-# Выполнение запроса на авторизацию
-response = requests.post(auth_url, json=auth_data)
-
-if response.status_code == 200:
-    token = response.json().get('token')
-    print('Токен:', token)
-    
-    # URL для запроса списка клиентов
-    customers_url = f'https://{hostname}/v2api/customer/index'
-
-    # Параметры запроса
-    params = {
-        'filters': {
-            'lead_status_id': 2  # ID стадии
-        },
-        'page': 0  # Номер страницы
-    }
-
-    # Заголовки запроса
-    headers = {
-        'X-ALFACRM-TOKEN': token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-
-    # Выполнение запроса на получение списка клиентов
-    response = requests.post(customers_url, headers=headers, json=params)
-
+    # Авторизация и получение токена
+    response = requests.post(auth_url, json=auth_data)
     if response.status_code == 200:
-        customers = response.json().get('items', [])
-        customer_ids = [customer['id'] for customer in customers]
-        print('Список ID клиентов на стадии с ID 2:', customer_ids)
+        token = response.json().get('token')
+        print('Токен:', token)
 
-        # Сохранение данных в CSV файл
-        with open('customers_stage_2.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['Customer ID'])
-            writer.writerows([[customer_id] for customer_id in customer_ids])
-        print("Данные сохранены в customers_stage_2.csv")
+        # URL для получения списка клиентов
+        customers_url = f'https://{hostname}/v2api/customer/index'
+        params = {
+            'filters': {'lead_status_id': 2},
+            'page': 0
+        }
+        headers = {
+            'X-ALFACRM-TOKEN': token,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+
+        # Получение клиентов
+        response = requests.post(customers_url, headers=headers, json=params)
+        if response.status_code == 200:
+            customers = response.json().get('items', [])
+            customer_ids = [customer['id'] for customer in customers]
+            print('ID клиентов на стадии 2:', customer_ids)
+
+            # Сохранение в CSV
+            with open('customers_stage_2.csv', mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['Customer ID'])
+                for customer_id in customer_ids:
+                    writer.writerow([customer_id])
+        else:
+            print('Ошибка получения списка клиентов:', response.text)
     else:
-        print('Ошибка получения списка клиентов:', response.text)
-else:
-    print('Ошибка авторизации:', response.text)
+        print('Ошибка авторизации:', response.text)
+
+if __name__ == "__main__":
+    fetch_data()
