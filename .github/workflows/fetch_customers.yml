@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  fetch-customers:
+  fetch-update:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out repository
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -17,14 +17,15 @@ jobs:
         python-version: '3.x'
 
     - name: Install dependencies
-      run: pip install requests
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
 
     - name: Run fetch_customers script
       run: python fetch_customers.py
       env:
-        ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
-        ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
-        ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
 
     - name: Commit and push changes
       run: |
@@ -35,4 +36,3 @@ jobs:
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
