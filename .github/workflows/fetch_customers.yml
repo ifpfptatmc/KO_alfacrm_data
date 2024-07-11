@@ -1,0 +1,27 @@
+name: Fetch Customers
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-customers:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install requests
+
+    - name: Run fetch_customers script
+      run: python fetch_customers.py
+      env:
+        ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
+        ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
+        ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
