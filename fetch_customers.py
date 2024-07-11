@@ -51,13 +51,18 @@ if response.status_code == 200:
         
         # Сохранение результатов в CSV файл
         csv_file_path = 'customers_stage_2.csv'
-        with open(csv_file_path, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['Customer ID'])
-            for customer_id in customer_ids:
-                writer.writerow([customer_id])
+        print(f'Сохранение результатов в файл {csv_file_path}')
+        
+        try:
+            with open(csv_file_path, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['Customer ID'])
+                for customer_id in customer_ids:
+                    writer.writerow([customer_id])
+            print(f'Результаты успешно сохранены в файл {csv_file_path}')
+        except Exception as e:
+            print(f'Ошибка при сохранении файла: {e}')
                 
-        print(f'Результаты сохранены в файл {csv_file_path}')
     else:
         print('Ошибка получения списка клиентов:', response.text)
 else:
