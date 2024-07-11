@@ -9,6 +9,8 @@ def fetch_customers():
 
     # URL для авторизации
     auth_url = f'https://{hostname}/v2api/auth/login'
+
+    # Данные для запроса
     auth_data = {
         'email': email,
         'api_key': api_key
@@ -16,12 +18,15 @@ def fetch_customers():
 
     # Выполнение запроса на авторизацию
     response = requests.post(auth_url, json=auth_data)
+
     if response.status_code == 200:
         token = response.json().get('token')
-        print('Токен получен:', token)
-
+        print('Токен:', token)
+        
         # URL для запроса списка клиентов
         customers_url = f'https://{hostname}/v2api/customer/index'
+
+        # Параметры запроса
         params = {
             'filters': {
                 'lead_status_id': 2  # ID стадии
@@ -29,28 +34,29 @@ def fetch_customers():
             'page': 0  # Номер страницы
         }
 
+        # Заголовки запроса
         headers = {
             'X-ALFACRM-TOKEN': token,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
 
+        # Выполнение запроса на получение списка клиентов
         response = requests.post(customers_url, headers=headers, json=params)
+
         if response.status_code == 200:
             customers = response.json().get('items', [])
             customer_ids = [customer['id'] for customer in customers]
             print('Список ID клиентов на стадии с ID 2:', customer_ids)
 
-            # Сохранение данных в CSV
+            # Сохранение данных в CSV файл
             file_path = 'customers_stage_2.csv'
-            with open(file_path, 'w', newline='') as csvfile:
-                fieldnames = ['customer_id']
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
+            with open(file_path, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['Customer ID'])
                 for customer_id in customer_ids:
-                    writer.writerow({'customer_id': customer_id})
-
-            print(f"Данные успешно сохранены в {file_path}")
+                    writer.writerow([customer_id])
+            print(f'Данные сохранены в файл {file_path}')
         else:
             print('Ошибка получения списка клиентов:', response.text)
     else:
