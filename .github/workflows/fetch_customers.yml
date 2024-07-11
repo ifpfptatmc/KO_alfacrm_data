@@ -1,4 +1,4 @@
-name: Fetch Customers
+name: Fetch and Update Data
 
 on:
   workflow_dispatch:
@@ -26,16 +26,12 @@ jobs:
         ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
-    - name: Check if CSV files exist
-      run: |
-        ls -l alfacrm_leads.csv
-
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add alfacrm_leads.csv
-        git commit -m 'Updated data'
+        git add customers_stage_2.csv
+        git commit -m 'Updated customer data'
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
