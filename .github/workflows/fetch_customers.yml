@@ -24,7 +24,7 @@ jobs:
     - name: Run fetch_customers script
       run: python fetch_customers.py
       env:
-        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        ACCESS_TOKEN: ${{ secrets.ALPHA_CRM_API_KEY }}
         AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
 
     - name: Commit and push changes
