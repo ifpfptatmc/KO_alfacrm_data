@@ -3,9 +3,9 @@ import csv
 import os
 
 # Данные для авторизации
-email = os.getenv('EMAIL')
-api_key = os.getenv('API_KEY')
-hostname = os.getenv('HOSTNAME')
+email = os.getenv('ALPHA_CRM_EMAIL')
+api_key = os.getenv('ALPHA_CRM_API_KEY')
+hostname = os.getenv('ALPHA_CRM_HOSTNAME')
 
 # URL для авторизации
 auth_url = f'https://{hostname}/v2api/auth/login'
