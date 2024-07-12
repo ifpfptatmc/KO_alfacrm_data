@@ -29,7 +29,13 @@ jobs:
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
     - name: Ensure CSV file exists
-      run: test -f lead_status_changes.csv
+      run: |
+        if [ -f lead_status_changes.csv ]; then
+          echo "CSV file exists"
+        else
+          echo "CSV file does not exist"
+          exit 1
+        fi
 
     - name: Commit and push changes
       run: |
