@@ -1,9 +1,7 @@
 import requests
-import csv
 import os
-from datetime import datetime
 
-def fetch_leads():
+def fetch_entities():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
@@ -17,26 +15,20 @@ def fetch_leads():
         token = response.json().get('token')
         print('Токен:', token)
         
-        # Запрос логов для получения лидов
-        logs_url = f'https://{hostname}/v2api/log/index'
+        # Запрос логов для получения значений entity
+        logs_url = f'https://{hostname}/v2api/1/log/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
 
         page = 0
         per_page = 100  # Количество записей на странице
-        lead_ids = set()
+        entities = set()
 
         while True:
             logs_params = {
-                'filters': {
-                    'entity': 'customer',
-                    'fields_new': {
-                        'lead_status_id': '5'
-                    }
-                },
                 'page': page,
                 'per-page': per_page
             }
-
+            
             response = requests.post(logs_url, headers=headers, json=logs_params)
 
             if response.status_code == 200:
@@ -45,26 +37,22 @@ def fetch_leads():
                     break
 
                 for log in logs:
-                    lead_ids.add(log['entity_id'])
-
+                    entities.add(log['entity'])
+                
                 if len(logs) < per_page:
                     break
-
+                
                 page += 1
             else:
                 print('Ошибка получения логов:', response.text)
                 break
 
-        # Сохранение данных в CSV файл
-        with open('leads_on_stage_8.csv', 'w', newline='') as csvfile:
-            fieldnames = ['Lead ID']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            for lead_id in lead_ids:
-                writer.writerow({'Lead ID': lead_id})
-        print('Список ID лидов сохранен в leads_on_stage_8.csv')
+        # Вывод всех уникальных значений entity
+        print('Перечень всех значений entity:')
+        for entity in entities:
+            print(entity)
     else:
         print('Ошибка авторизации:', response.text)
 
 if __name__ == "__main__":
-    fetch_leads()
+    fetch_entities()
