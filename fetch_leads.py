@@ -38,13 +38,13 @@ def fetch_leads():
             lead_ids = [log['entity_id'] for log in logs]
             
             # Сохранение данных в CSV файл
-            with open('leads_on_stage_4.csv', 'w', newline='') as csvfile:
+            with open('leads_on_stage_8.csv', 'w', newline='') as csvfile:
                 fieldnames = ['Lead ID']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
                 for lead_id in lead_ids:
                     writer.writerow({'Lead ID': lead_id})
-            print('Список ID лидов сохранен в leads_on_stage_4.csv')
+            print('Список ID лидов сохранен в leads_on_stage_8.csv')
         else:
             print('Ошибка получения логов:', response.text)
     else:
