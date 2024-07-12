@@ -30,11 +30,8 @@ jobs:
 
     - name: Ensure CSV file exists
       run: |
-        if [ -f customers_stage_2.csv ]; then
-          echo "CSV file exists.";
-        else
-          echo "CSV file does not exist.";
-          exit 1;
+        if [ ! -f customers_stage_2.csv ]; then
+          echo "Дата,Заявки" > customers_stage_2.csv
         fi
 
     - name: Commit and push changes
@@ -45,5 +42,5 @@ jobs:
         git commit -m 'Updated customer data'
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
       continue-on-error: true
