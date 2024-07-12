@@ -1,6 +1,7 @@
 import requests
 import csv
 import os
+from datetime import datetime
 
 def fetch_leads():
     email = os.getenv('ALPHA_CRM_EMAIL')
@@ -14,49 +15,39 @@ def fetch_leads():
 
     if response.status_code == 200:
         token = response.json().get('token')
-        print('Авторизация успешна. Токен получен:', token)
+        print('Токен:', token)
         
-        # Запрос на получение списка лидов, побывавших на стадии с ID 4
-        leads_url = f'https://{hostname}/v2api/lead/index'
-        params = {
+        # Запрос логов для получения лидов
+        logs_url = f'https://{hostname}/v2api/log/index'
+        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
+        
+        logs_params = {
             'filters': {
-                'stage_id': 4  # ID стадии
+                'entity': 'lead',
+                'event': 1,  # событие добавления
+                'fields_new': {
+                    'lead_status_id': 4  # ID стадии
+                }
             },
-            'page': 0,  # Номер страницы (начинаем с 0)
-            'limit': 100  # Максимальное количество записей на страницу
-        }
-        headers = {
-            'X-ALFACRM-TOKEN': token,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'page': 0  # Номер страницы
         }
 
-        lead_ids = []
+        response = requests.post(logs_url, headers=headers, json=logs_params)
 
-        while True:
-            response = requests.post(leads_url, headers=headers, json=params)
-            if response.status_code == 200:
-                leads = response.json().get('items', [])
-                if not leads:
-                    break
-
-                for lead in leads:
-                    lead_ids.append(lead['id'])
-
-                params['page'] += 1
-            else:
-                print('Ошибка получения списка лидов:', response.text)
-                break
-
-        # Сохранение ID лидов в CSV файл
-        with open('leads_stage_4.csv', 'w', newline='') as csvfile:
-            fieldnames = ['lead_id']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            for lead_id in lead_ids:
-                writer.writerow({'lead_id': lead_id})
-
-        print('Список ID лидов, побывавших на стадии с ID 4, успешно сохранён в leads_stage_4.csv')
+        if response.status_code == 200:
+            logs = response.json().get('items', [])
+            lead_ids = [log['entity_id'] for log in logs]
+            
+            # Сохранение данных в CSV файл
+            with open('leads_on_stage_4.csv', 'w', newline='') as csvfile:
+                fieldnames = ['Lead ID']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                for lead_id in lead_ids:
+                    writer.writerow({'Lead ID': lead_id})
+            print('Список ID лидов сохранен в leads_on_stage_4.csv')
+        else:
+            print('Ошибка получения логов:', response.text)
     else:
         print('Ошибка авторизации:', response.text)
 
