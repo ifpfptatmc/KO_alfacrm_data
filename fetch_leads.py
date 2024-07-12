@@ -1,5 +1,7 @@
 import requests
+import csv
 import os
+from datetime import datetime
 
 def fetch_entities():
     email = os.getenv('ALPHA_CRM_EMAIL')
@@ -15,42 +17,39 @@ def fetch_entities():
         token = response.json().get('token')
         print('Токен:', token)
         
-        # Запрос логов для получения значений entity
-        logs_url = f'https://{hostname}/v2api/1/log/index'
+        # Запрос логов для получения всех значений entity
+        logs_url = f'https://{hostname}/v2api/log/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
 
-        page = 0
-        per_page = 100  # Количество записей на странице
+        logs_params = {
+            'filters': {},
+            'page': 0,
+            'per_page': 100
+        }
+        
         entities = set()
-
+        
         while True:
-            logs_params = {
-                'page': page,
-                'per-page': per_page
-            }
-            
             response = requests.post(logs_url, headers=headers, json=logs_params)
-
             if response.status_code == 200:
                 logs = response.json().get('items', [])
                 if not logs:
                     break
-
                 for log in logs:
                     entities.add(log['entity'])
-                
-                if len(logs) < per_page:
-                    break
-                
-                page += 1
+                logs_params['page'] += 1
             else:
                 print('Ошибка получения логов:', response.text)
                 break
-
-        # Вывод всех уникальных значений entity
-        print('Перечень всех значений entity:')
-        for entity in entities:
-            print(entity)
+        
+        # Сохранение данных в CSV файл
+        with open('entities_list.csv', 'w', newline='') as csvfile:
+            fieldnames = ['Entity']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for entity in entities:
+                writer.writerow({'Entity': entity})
+        print('Список значений entity сохранен в entities_list.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
