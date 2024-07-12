@@ -30,7 +30,12 @@ jobs:
 
     - name: Ensure CSV file exists
       run: |
-        ls -l customers_stage_2.csv
+        if [ -f customers_stage_2.csv ]; then
+          echo "CSV file exists.";
+        else
+          echo "CSV file does not exist.";
+          exit 1;
+        fi
 
     - name: Commit and push changes
       run: |
