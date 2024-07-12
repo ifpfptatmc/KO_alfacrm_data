@@ -21,22 +21,23 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
 
-    - name: Run fetch_customers script
-      run: python fetch_customers.py
+    - name: Run fetch_leads script
+      run: python fetch_leads.py
       env:
         ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
         ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
     - name: Ensure CSV file exists
-      run: ls -la customers_stage_2.csv
+      run: ls -la leads_stage_4.csv
 
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add customers_stage_2.csv
-        git commit -m 'Updated customer data'
+        git add leads_stage_4.csv
+        git commit -m 'Updated leads data'
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true
