@@ -1,9 +1,8 @@
 import requests
 import csv
 import os
-from datetime import datetime
 
-def fetch_entities():
+def fetch_leads_status():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
@@ -17,41 +16,43 @@ def fetch_entities():
         token = response.json().get('token')
         print('Токен:', token)
         
-        # Запрос логов для получения всех значений entity
-        logs_url = f'https://{hostname}/v2api/log/index'
+        # Запрос на получение всех лидов и их статусов
+        leads_url = f'https://{hostname}/v2api/lead/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
 
-        logs_params = {
+        leads_params = {
             'filters': {},
             'page': 0,
             'per_page': 100
         }
         
-        entities = set()
-        
+        leads_data = []
+
         while True:
-            response = requests.post(logs_url, headers=headers, json=logs_params)
+            response = requests.post(leads_url, headers=headers, json=leads_params)
             if response.status_code == 200:
-                logs = response.json().get('items', [])
-                if not logs:
+                leads = response.json().get('items', [])
+                if not leads:
                     break
-                for log in logs:
-                    entities.add(log['entity'])
-                logs_params['page'] += 1
+                for lead in leads:
+                    lead_id = lead.get('id')
+                    status_id = lead.get('lead_status_id')
+                    leads_data.append({'Lead ID': lead_id, 'Status ID': status_id})
+                leads_params['page'] += 1
             else:
-                print('Ошибка получения логов:', response.text)
+                print('Ошибка получения лидов:', response.text)
                 break
         
         # Сохранение данных в CSV файл
-        with open('entities_list.csv', 'w', newline='') as csvfile:
-            fieldnames = ['Entity']
+        with open('leads_status.csv', 'w', newline='') as csvfile:
+            fieldnames = ['Lead ID', 'Status ID']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            for entity in entities:
-                writer.writerow({'Entity': entity})
-        print('Список значений entity сохранен в entities_list.csv')
+            for data in leads_data:
+                writer.writerow(data)
+        print('Список лидов и их статусов сохранен в leads_status.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
 if __name__ == "__main__":
-    fetch_entities()
+    fetch_leads_status()
