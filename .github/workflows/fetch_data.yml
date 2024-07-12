@@ -29,13 +29,17 @@ jobs:
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
     - name: Ensure CSV file exists
-      run: ls -la leads_stage_4.csv
+      run: |
+        if [ ! -f leads_on_stage_4.csv ]; then
+          echo "leads_on_stage_4.csv file not found!"
+          exit 1
+        fi
 
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add leads_stage_4.csv
+        git add leads_on_stage_4.csv
         git commit -m 'Updated leads data'
         git push
       env:
