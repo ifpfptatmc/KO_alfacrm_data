@@ -26,7 +26,7 @@ def fetch_leads():
                 'entity': 'Customer',
                 'event': 1,  # событие добавления
                 'fields_new': {
-                    'lead_status_id': 4  # ID стадии
+                    'lead_status_id': 8  # ID стадии
                 }
             },
             'page': 0  # Номер страницы
