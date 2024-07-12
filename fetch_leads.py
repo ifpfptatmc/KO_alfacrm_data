@@ -20,6 +20,15 @@ def fetch_leads():
         # Запрос логов для получения лидов
         logs_url = f'https://{hostname}/v2api/log/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
+
+        logs_params = {
+            'filters': {
+                'fields_new': {
+                    'lead_status_id': 8  # ID стадии
+                }
+            },
+            'page': 0  # Номер страницы
+        }
         
         response = requests.post(logs_url, headers=headers, json=logs_params)
 
