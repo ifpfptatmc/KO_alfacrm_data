@@ -23,10 +23,7 @@ def fetch_leads():
 
         logs_params = {
             'filters': {
-                'entity': 'Lead',
-                'fields_new': {
-                    'lead_status_id': '8'  # ID стадии
-                }
+                'entity': 'Lead'
             }
         }
         
