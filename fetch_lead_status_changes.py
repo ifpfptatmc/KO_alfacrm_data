@@ -16,25 +16,27 @@ def fetch_lead_status_changes():
     if response.status_code == 200:
         token = response.json().get('token')
         print('Токен:', token)
-
-        # Запрос логов для получения изменений статусов лидов за последние 7 дней
-        logs_url = f'https://{hostname}/v2api/log/index'
-        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
-
+        
+        # Дата за последние 7 дней
         end_date = datetime.now()
         start_date = end_date - timedelta(days=7)
 
-        lead_status_changes = []
+        # Запрос логов для получения изменений статусов лидов
+        logs_url = f'https://{hostname}/v2api/log/index'
+        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
 
         page = 0
-        per_page = 100
+        per_page = 100  # Количество записей на странице
+        lead_changes = []
 
         while True:
             logs_params = {
                 'filters': {
                     'entity': 'customer',
-                    'event': 2,  # тип события - изменение
-                    'date_time': {'$gte': start_date.strftime('%Y-%m-%dT%H:%M:%S'), '$lte': end_date.strftime('%Y-%m-%dT%H:%M:%S')}
+                    'date_time': {
+                        '$gte': start_date.strftime('%Y-%m-%d %H:%M:%S'),
+                        '$lt': end_date.strftime('%Y-%m-%d %H:%M:%S')
+                    }
                 },
                 'page': page,
                 'per-page': per_page
@@ -48,31 +50,32 @@ def fetch_lead_status_changes():
                     break
 
                 for log in logs:
-                    fields_old = log.get('fields_old', [])
-                    fields_new = log.get('fields_new', [])
-                    old_status = next((field['lead_status_id'] for field in fields_old if 'lead_status_id' in field), None)
-                    new_status = next((field['lead_status_id'] for field in fields_new if 'lead_status_id' in field), None)
-                    if old_status is not None and new_status is not None:
-                        lead_status_changes.append({
-                            'Lead ID': log['entity_id'],
-                            'Old Status ID': old_status,
-                            'New Status ID': new_status,
-                            'Change Date': log['date_time']
-                        })
+                    if 'fields_old' in log and 'fields_new' in log:
+                        old_status = next((field['lead_status_id'] for field in log['fields_old'] if 'lead_status_id' in field), None)
+                        new_status = next((field['lead_status_id'] for field in log['fields_new'] if 'lead_status_id' in field), None)
+                        if old_status is not None and new_status is not None:
+                            lead_changes.append({
+                                'Lead ID': log['entity_id'],
+                                'Old Status ID': old_status,
+                                'New Status ID': new_status,
+                                'Change Date': log['date_time']
+                            })
 
                 page += 1
+                if len(logs) < per_page:
+                    break
             else:
                 print('Ошибка получения логов:', response.text)
                 break
-
+        
         # Сохранение данных в CSV файл
         with open('lead_status_changes.csv', 'w', newline='') as csvfile:
             fieldnames = ['Lead ID', 'Old Status ID', 'New Status ID', 'Change Date']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            for change in lead_status_changes:
+            for change in lead_changes:
                 writer.writerow(change)
-        
+
         print('История изменений статусов лидов сохранена в lead_status_changes.csv')
     else:
         print('Ошибка авторизации:', response.text)
