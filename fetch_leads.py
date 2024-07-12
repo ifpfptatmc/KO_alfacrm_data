@@ -28,7 +28,7 @@ def fetch_leads():
         while True:
             logs_params = {
                 'filters': {
-                    'entity': 'lead',
+                    'entity': 'customer',
                     'fields_new': {
                         'lead_status_id': 8
                     }
