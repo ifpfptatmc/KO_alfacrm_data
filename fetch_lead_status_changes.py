@@ -18,49 +18,45 @@ def fetch_lead_status_changes():
         print('Токен:', token)
         
         # Запрос логов для получения изменений статусов лидов
-        logs_url = f'https://{hostname}/v2api/log/index'
+        logs_url = f'https://{hostname}/v2api/1/log/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
-
-        # Конкретные даты
-        start_date = '2024-07-01'
-        end_date = '2024-07-10'
 
         logs_params = {
             'filters': {
                 'entity': 'lead',
                 'date_time': {
-                    '$gte': start_date,
-                    '$lte': end_date
+                    '$gte': '2024-07-01',
+                    '$lte': '2024-07-10'
+                },
+                'event': 'update',
+                'fields_new.lead_status_id': {
+                    '$exists': True
                 }
-            }
+            },
+            'sort': 'date_time'
         }
-
+        
         response = requests.post(logs_url, headers=headers, json=logs_params)
 
         if response.status_code == 200:
             logs = response.json().get('items', [])
-            lead_changes = []
+            lead_status_changes = []
 
             for log in logs:
-                fields_old = log.get('fields_old')
-                fields_new = log.get('fields_new')
-                
-                if fields_old is not None and isinstance(fields_old, list):
-                    old_status = next((field['lead_status_id'] for field in fields_old if isinstance(field, dict) and 'lead_status_id' in field), None)
-                else:
-                    old_status = None
+                lead_id = log.get('entity_id')
+                fields_old = log.get('fields_old', [])
+                fields_new = log.get('fields_new', [])
 
-                if fields_new is not None and isinstance(fields_new, list):
-                    new_status = next((field['lead_status_id'] for field in fields_new if isinstance(field, dict) and 'lead_status_id' in field), None)
-                else:
-                    new_status = None
+                old_status = next((field['lead_status_id'] for field in fields_old if isinstance(field, dict) and 'lead_status_id' in field), None)
+                new_status = next((field['lead_status_id'] for field in fields_new if isinstance(field, dict) and 'lead_status_id' in field), None)
+                change_date = log.get('date_time')
 
-                if old_status or new_status:
-                    lead_changes.append({
-                        'Lead ID': log['entity_id'],
+                if old_status is not None and new_status is not None:
+                    lead_status_changes.append({
+                        'Lead ID': lead_id,
                         'Old Status ID': old_status,
                         'New Status ID': new_status,
-                        'Change Date': log['date_time']
+                        'Change Date': change_date
                     })
             
             # Сохранение данных в CSV файл
@@ -68,9 +64,9 @@ def fetch_lead_status_changes():
                 fieldnames = ['Lead ID', 'Old Status ID', 'New Status ID', 'Change Date']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
-                for change in lead_changes:
+                for change in lead_status_changes:
                     writer.writerow(change)
-            print('Изменения статусов лидов сохранены в lead_status_changes.csv')
+            print('История изменений статусов лидов сохранена в lead_status_changes.csv')
         else:
             print('Ошибка получения логов:', response.text)
     else:
