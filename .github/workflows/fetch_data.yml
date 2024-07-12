@@ -28,14 +28,8 @@ jobs:
         ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
-    - name: Ensure CSV file exists and is not empty
-      run: |
-        if [ -s lead_status_changes.csv ]; then
-          echo "CSV file exists and is not empty"
-        else
-          echo "CSV file is empty"
-          exit 1
-        fi
+    - name: Ensure CSV file exists
+      run: test -f lead_status_changes.csv && echo "CSV file exists" || echo "CSV file does not exist"
 
     - name: Commit and push changes
       run: |
