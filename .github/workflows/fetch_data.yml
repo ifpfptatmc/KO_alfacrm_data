@@ -29,10 +29,7 @@ jobs:
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
     - name: Ensure CSV file exists
-      run: |
-        if [ ! -f customers_stage_2.csv ]; then
-          echo "Дата,Заявки" > customers_stage_2.csv
-        fi
+      run: ls -la customers_stage_2.csv
 
     - name: Commit and push changes
       run: |
@@ -42,5 +39,4 @@ jobs:
         git commit -m 'Updated customer data'
         git push
       env:
-        MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
-      continue-on-error: true
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
