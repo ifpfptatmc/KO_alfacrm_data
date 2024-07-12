@@ -1,4 +1,4 @@
-name: Fetch and Update Lead Status Data
+name: Fetch and Update Lead Status Changes
 
 on:
   workflow_dispatch:
@@ -29,8 +29,11 @@ jobs:
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
     - name: Ensure CSV file exists
-      run: echo "Check if lead_status_changes.csv is created"
-      continue-on-error: true
+      run: |
+        if [ ! -f lead_status_changes.csv ]; then
+          echo "CSV file does not exist!"
+          exit 1
+        fi
 
     - name: Commit and push changes
       run: |
@@ -40,4 +43,5 @@ jobs:
         git commit -m 'Updated lead status changes data'
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+      continue-on-error: true
