@@ -24,7 +24,6 @@ def fetch_leads():
         logs_params = {
             'filters': {
                 'entity': 'Customer',
-                'event': 1,  # событие добавления
                 'fields_new': {
                     'lead_status_id': 8  # ID стадии
                 }
