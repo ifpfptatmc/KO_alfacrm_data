@@ -30,7 +30,7 @@ def fetch_leads():
                 'filters': {
                     'entity': 'customer',
                     'fields_new': {
-                        'lead_status_id': 8
+                        'lead_status_id': 10
                     }
                 },
                 'page': page,
