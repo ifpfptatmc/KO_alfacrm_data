@@ -23,12 +23,11 @@ def fetch_leads():
 
         logs_params = {
             'filters': {
-                'entity': 'Customer',
+                'entity': 'Lead',
                 'fields_new': {
                     'lead_status_id': '8'  # ID стадии
                 }
-            },
-            'page': 0  # Номер страницы
+            }
         }
         
         response = requests.post(logs_url, headers=headers, json=logs_params)
