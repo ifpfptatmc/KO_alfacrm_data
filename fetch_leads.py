@@ -21,16 +21,6 @@ def fetch_leads():
         logs_url = f'https://{hostname}/v2api/log/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         
-        logs_params = {
-            'filters': {
-                'entity': 'Customer',
-                'fields_new': {
-                    'lead_status_id': 8  # ID стадии
-                }
-            },
-            'page': 0  # Номер страницы
-        }
-
         response = requests.post(logs_url, headers=headers, json=logs_params)
 
         if response.status_code == 200:
