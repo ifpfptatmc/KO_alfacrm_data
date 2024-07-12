@@ -13,7 +13,7 @@ def fetch_data():
 
     if response.status_code == 200:
         token = response.json().get('token')
-        customers_url = f'https://{hostname}/v2api/customer/index'
+        customers_url = f'https://{hostname}/v2api/log/index'
         params = {'filters': {'lead_status_id': 2}, 'page': 0}
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         response = requests.post(customers_url, headers=headers, json=params)
