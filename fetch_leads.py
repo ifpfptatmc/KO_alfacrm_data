@@ -18,7 +18,7 @@ def fetch_leads():
         print('Токен:', token)
         
         # Запрос логов для получения лидов
-        logs_url = f'https://{hostname}/v2api/log/index'
+        logs_url = f'https://{hostname}/v2api/1/log/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
 
         logs_params = {
