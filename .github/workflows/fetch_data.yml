@@ -35,19 +35,6 @@ jobs:
           exit 1
         fi
 
-    - name: Run fetch_leads_with_stage_8 script
-      run: python fetch_leads_with_stage_8.py
-      env:
-        ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
-        ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
-        ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
-
-    - name: Ensure leads CSV file exists and is not empty
-      run: |
-        if [ ! -s leads_stage_8.csv ]; then
-          echo "leads_stage_8.csv is empty"
-          exit 1
-        fi
 
     - name: Run fetch_history_changes script
       run: python fetch_history_changes.py
@@ -81,7 +68,7 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add trial_lessons.csv leads_stage_8.csv leads_history_changes.csv customers_statuses_sources.csv
+        git add trial_lessons.csv leads_history_changes.csv customers_statuses_sources.csv
         git commit -m 'Updated lessons and leads data'
         git push
       env:
