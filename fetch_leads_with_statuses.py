@@ -23,7 +23,6 @@ def fetch_leads_with_statuses():
         
         data = {
             "entity": "Customer",
-            "status_id": 8,
             "page": 0  # Начальная страница
         }
         
@@ -63,7 +62,7 @@ def fetch_leads_with_statuses():
                         writer.writerow({
                             'lead_id': log.get('entity_id'),
                             'status_id': fields_new['lead_status_id'],
-                            'lead_source_id': log.get('lead_source_id'),
+                            'lead_source_id': fields_new('lead_source_id'),
                             'date': log.get('date_time')
                         })
             writer.writerow({'lead_id': 'Last updated', 'status_id': '', 'lead_source_id': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
