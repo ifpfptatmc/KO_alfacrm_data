@@ -28,13 +28,19 @@ jobs:
         ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
+    - name: Ensure CSV file exists and is not empty
+      run: |
+        if [ -z "$(ls -A | grep trial_lessons_)" ]; then
+          echo "CSV file is empty or does not exist"
+          exit 1
+        fi
+
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add trial_lessons.csv
+        git add trial_lessons_*.csv
         git commit -m 'Updated trial lessons data'
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
