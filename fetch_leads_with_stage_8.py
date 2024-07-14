@@ -23,7 +23,9 @@ def fetch_leads_with_stage_8():
         
         payload = {
             "entity": "Customer",
-            "lead_status_id": 8
+            "fields_new": {
+                "lead_status_id": 8
+            }
         }
         
         response = requests.post(logs_url, headers=headers, data=json.dumps(payload))
