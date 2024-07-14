@@ -18,33 +18,48 @@ def fetch_leads_with_stage_8():
         token = response.json().get('token')
         print('Токен:', token)
         
-        logs_url = f'https://{hostname}/v2api/1/log'
+        logs_url = f'https://{hostname}/v2api/1/log/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         
         payload = {
+            "entity": "Customer",
+            "fields_new": {
+                "lead_status_id": 8
+            }
         }
         
-        response = requests.post(logs_url, headers=headers, data=json.dumps(payload))
+        page = 0
+        all_logs = []
 
-        if response.status_code == 200:
-            logs = response.json().get('items', [])
+        while True:
+            payload['page'] = page
+            response = requests.post(logs_url, headers=headers, data=json.dumps(payload))
+
+            if response.status_code == 200:
+                logs = response.json().get('items', [])
+                if not logs:
+                    break
+                all_logs.extend(logs)
+                page += 1
+            else:
+                print(f'Ошибка получения логов: {response.text}')
+                break
             
-            # Сохранение данных в CSV файл
-            with open('leads_stage_8.csv', 'w', newline='') as csvfile:
-                fieldnames = ['lead_id', 'lead_source_id', 'date']
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
-                for log in logs:
+        # Сохранение данных в CSV файл
+        with open('leads_stage_8.csv', 'w', newline='') as csvfile:
+            fieldnames = ['lead_id', 'source', 'date']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for log in all_logs:
+                if 'fields_new' in log and log['fields_new'].get('lead_status_id') == 8:
                     writer.writerow({
                         'lead_id': log.get('entity_id'),
-                        'lead_source_id': log.get('lead_source_id'),
-                        'date': log.get('created_at')
+                        'source': log.get('source'),
+                        'date': log.get('date_time')
                     })
-                writer.writerow({'lead_id': 'Last updated', 'lead_source_id': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+            writer.writerow({'lead_id': 'Last updated', 'source': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
-            print('Список лидов со стадией 8 сохранен в leads_stage_8.csv')
-        else:
-            print(f'Ошибка получения логов: {response.text}')
+        print('Список лидов со стадией 8 сохранен в leads_stage_8.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
