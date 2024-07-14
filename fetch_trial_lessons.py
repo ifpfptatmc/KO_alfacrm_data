@@ -17,38 +17,41 @@ def fetch_trial_lessons():
         token = response.json().get('token')
         print('Токен:', token)
         
-        # Запрос данных о пробных уроках
+        # Запрос уроков
         lessons_url = f'https://{hostname}/v2api/1/lesson/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
-
-        filters = {
-            'lesson_type_id': 3,
-            'status': 'finished'
+        
+        lessons_params = {
+            'filters': {
+                'lesson_type_id': 3,
+                'status': 'finished'
+            }
         }
-
-        response = requests.post(lessons_url, headers=headers, json={'filters': filters})
-        print('Код ответа запроса:', response.status_code)
-        print('Ответ:', response.json())
+        
+        response = requests.post(lessons_url, headers=headers, json=lessons_params)
 
         if response.status_code == 200:
             lessons = response.json().get('items', [])
-            print('Найденные уроки:', lessons)
             lessons_by_date = {}
 
             for lesson in lessons:
-                lesson_date = lesson['date']
-                if lesson_date not in lessons_by_date:
-                    lessons_by_date[lesson_date] = 0
-                lessons_by_date[lesson_date] += 1
+                date = lesson['date']
+                if date not in lessons_by_date:
+                    lessons_by_date[date] = 0
+                lessons_by_date[date] += 1
+            
+            # Добавляем текущую дату и время к имени файла
+            now = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f'trial_lessons_{now}.csv'
 
             # Сохранение данных в CSV файл
-            with open('trial_lessons.csv', 'w', newline='') as csvfile:
-                fieldnames = ['Date', 'Number of Trial Lessons']
+            with open(filename, 'w', newline='') as csvfile:
+                fieldnames = ['Date', 'Trial Lessons Count']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
                 for date, count in lessons_by_date.items():
-                    writer.writerow({'Date': date, 'Number of Trial Lessons': count})
-            print('Данные о пробных уроках сохранены в trial_lessons.csv')
+                    writer.writerow({'Date': date, 'Trial Lessons Count': count})
+            print(f'Список пробных уроков сохранен в {filename}')
         else:
             print('Ошибка получения уроков:', response.text)
     else:
