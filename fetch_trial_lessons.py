@@ -36,11 +36,9 @@ def fetch_trial_lessons():
                 lessons_url = f'https://{hostname}/v2api/1/lesson/index'
                 headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
                 lessons_params = {
-                    'filters': {
-                        'lesson_type_id': 3,
-                        'status': 'finished',
-                        'date_from': date_str,
-                        'date_to': date_str
+                "filters": {
+                    "lesson_type_id": 3,
+                    "status": "finished",
                     }
                 }
                 
