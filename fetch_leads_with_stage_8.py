@@ -23,7 +23,6 @@ def fetch_leads_with_stage_8():
         
         payload = {
             "entity": "Customer",
-            "event": 2,
             "fields_new": {
                "field_new" : "is_study",
                 "value_new": 1
