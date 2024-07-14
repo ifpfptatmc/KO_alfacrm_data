@@ -25,8 +25,8 @@ def fetch_leads_with_stage_8():
             "entity": "Customer",
             "event": 2,
             "fields_new": {
-               "field_new" : "lead_status_id",
-                "value_new": 8
+               "field_new" : "is_study",
+                "value_new": 1
             }
         }
         
