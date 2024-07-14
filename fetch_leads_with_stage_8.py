@@ -23,6 +23,7 @@ def fetch_leads_with_stage_8():
         
         payload = {
             "entity": "Customer",
+            "event": 2,
             "fields_new": {
                 "lead_status_id": 8
             }
