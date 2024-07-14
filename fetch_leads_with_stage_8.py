@@ -64,7 +64,6 @@ def fetch_leads_with_stage_8():
                         writer.writerow({
                             'lead_id': log.get('entity_id')
                         })
-            writer.writerow({'lead_id': '111'})
 
         print('Список лидов со стадией 8 сохранен в leads_stage_8.csv')
     else:
