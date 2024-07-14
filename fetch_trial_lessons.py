@@ -1,9 +1,10 @@
 import requests
+import json
 import csv
 import os
 from datetime import datetime
 
-def fetch_trial_lessons():
+def fetch_lessons():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
@@ -16,61 +17,40 @@ def fetch_trial_lessons():
     if response.status_code == 200:
         token = response.json().get('token')
         print('Токен:', token)
-
-        # Запрос уроков
-        lessons_url = f'https://{hostname}/v2api/1/lesson/index'
+        
+        # Запрос уроков с фильтрацией
+        lessons_url = f'https://{hostname}/v2api/1/lesson'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
+        
+        payload = {
+            "lesson_type_id": 3,
+            "status": 3,
+            "date_from": "13.06.2024",  # начальная дата
+            "date_to": datetime.now().strftime("%d.%m.%Y")  # текущая дата
+        }
+        
+        response = requests.post(lessons_url, headers=headers, data=json.dumps(payload))
 
-        page = 0
-        per_page = 100  # Количество записей на странице
-        trial_lessons = []
-
-        while True:
-            lessons_params = {
-                'filters': {
-                    'lesson_type_id': 3,
-                    'status': 'finished'
-                },
-                'page': page,
-                'per-page': per_page
-            }
-
-            response = requests.post(lessons_url, headers=headers, json=lessons_params)
-
-            if response.status_code == 200:
-                lessons = response.json().get('items', [])
-                if not lessons:
-                    break
-                trial_lessons.extend(lessons)
-                page += 1
-            else:
-                print('Ошибка получения уроков:', response.text)
-                break
-
-        # Подсчет количества уроков по датам
-        lesson_counts = {}
-        for lesson in trial_lessons:
-            lesson_date = lesson['date']
-            if lesson_date in lesson_counts:
-                lesson_counts[lesson_date] += 1
-            else:
-                lesson_counts[lesson_date] = 1
-
-        # Сохранение данных в CSV файл
-        with open('trial_lessons.csv', 'w', newline='') as csvfile:
-            fieldnames = ['Date', 'Trial Lessons Count']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            for date, count in lesson_counts.items():
-                writer.writerow({'Date': date, 'Trial Lessons Count': count})
-
-            # Добавление даты/времени обновления
-            writer.writerow({})
-            writer.writerow({'Date': '# Last updated:', 'Trial Lessons Count': datetime.now().isoformat()})
-
-        print('Список проведенных пробных уроков сохранен в trial_lessons.csv')
+        if response.status_code == 200:
+            lessons = response.json().get('items', [])
+            
+            # Сохранение данных в CSV файл
+            with open('filtered_lessons.csv', 'w', newline='') as csvfile:
+                fieldnames = ['lesson_id', 'lesson_type_id', 'status', 'date']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                for lesson in lessons:
+                    writer.writerow({
+                        'lesson_id': lesson.get('id'),
+                        'lesson_type_id': lesson.get('lesson_type_id'),
+                        'status': lesson.get('status'),
+                        'date': lesson.get('date')
+                    })
+            print('Список уроков сохранен в filtered_lessons.csv')
+        else:
+            print('Ошибка получения уроков:', response.text)
     else:
         print('Ошибка авторизации:', response.text)
 
 if __name__ == "__main__":
-    fetch_trial_lessons()
+    fetch_lessons()
