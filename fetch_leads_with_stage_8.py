@@ -42,10 +42,10 @@ def fetch_leads_with_stage_8():
                 for log in logs:
                     writer.writerow({
                         'lead_id': log.get('entity_id'),
-                        'source': log.get('lead_source_id'),
+                        'lead_source_id': log.get('lead_source_id'),
                         'date': log.get('created_at')
                     })
-                writer.writerow({'lead_id': 'Last updated', 'source': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+                writer.writerow({'lead_id': 'Last updated', 'lead_source_id': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
             print('Список лидов со стадией 8 сохранен в leads_stage_8.csv')
         else:
