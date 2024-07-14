@@ -17,43 +17,61 @@ def fetch_trial_lessons():
         token = response.json().get('token')
         print('Токен:', token)
         
-        # Установим даты
+        # Запрос уроков
+        lessons_url = f'https://{hostname}/v2api/1/lesson/index'
+        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
+
+        # Задаем диапазон дат
         start_date = datetime(2024, 6, 13)
         end_date = datetime.now() - timedelta(days=1)
-        
-        date_generated = [start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)]
-        
-        # Подготовка CSV файла
+
+        # Инициализация данных
+        date_range = [start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+        lesson_data = {date.strftime('%Y-%m-%d'): 0 for date in date_range}
+
+        page = 0
+        per_page = 100  # Количество записей на странице
+
+        while True:
+            lessons_params = {
+                'filters': {
+                    'lesson_type_id': 3,
+                    'status': 'finished',
+                    'date_from': start_date.strftime('%d.%m.%Y'),
+                    'date_to': end_date.strftime('%d.%m.%Y')
+                },
+                'page': page,
+                'per-page': per_page
+            }
+            
+            response = requests.post(lessons_url, headers=headers, json=lessons_params)
+
+            if response.status_code == 200:
+                lessons = response.json().get('items', [])
+                if not lessons:
+                    break
+
+                for lesson in lessons:
+                    lesson_date = lesson['date']
+                    if lesson_date in lesson_data:
+                        lesson_data[lesson_date] += 1
+
+                page += 1
+                if len(lessons) < per_page:
+                    break
+            else:
+                print('Ошибка получения уроков:', response.text)
+                break
+
+        # Сохранение данных в CSV файл
         with open('trial_lessons.csv', 'w', newline='') as csvfile:
             fieldnames = ['date', 'lesson_count']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            
-            for date in date_generated:
-                date_str = date.strftime('%Y-%m-%d')
-                
-                # Запрос уроков
-                lessons_url = f'https://{hostname}/v2api/1/lesson/index'
-                headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
-                lessons_params = {
-                "filters": {
-                    "lesson_type_id": 3,
-                    "status": "finished",
-                    }
-                }
-                
-                response = requests.post(lessons_url, headers=headers, json=lessons_params)
-                
-                if response.status_code == 200:
-                    lessons = response.json().get('items', [])
-                    lesson_count = len(lessons)
-                else:
-                    print('Ошибка получения уроков:', response.text)
-                    lesson_count = 0
-                
-                writer.writerow({'date': date_str, 'lesson_count': lesson_count})
-        
-        print('Список уроков сохранен в trial_lessons.csv')
+            for date, count in lesson_data.items():
+                writer.writerow({'date': date, 'lesson_count': count})
+            writer.writerow({'date': 'Last updated', 'lesson_count': datetime.now().isoformat()})
+        print('Данные о пробных уроках сохранены в trial_lessons.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
