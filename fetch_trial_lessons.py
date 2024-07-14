@@ -21,41 +21,36 @@ def fetch_trial_lessons():
         lessons_url = f'https://{hostname}/v2api/1/lesson/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
 
-        lessons_params = {
-            'filters': {
-                'lesson_type_id': 3,  # Пробные уроки
-                'status': 'finished'  # Завершенные
-            },
-            'fields': ['date'],
-            'page': 0,
-            'page_size': 100
+        filters = {
+            'lesson_type_id': 3,
+            'status': 'finished'
         }
-        
-        response = requests.post(lessons_url, headers=headers, json=lessons_params)
-        print('Запрос:', response.request.body)
-        print('Ответ статус-код:', response.status_code)
-        print('Ответ:', response.text)
+
+        response = requests.post(lessons_url, headers=headers, json={'filters': filters})
+        print('Код ответа запроса:', response.status_code)
+        print('Ответ:', response.json())
 
         if response.status_code == 200:
             lessons = response.json().get('items', [])
-            
-            # Подсчет количества уроков по датам
-            date_counts = {}
+            print('Найденные уроки:', lessons)
+            lessons_by_date = {}
+
             for lesson in lessons:
-                lesson_date = lesson.get('date')
-                if lesson_date:
-                    date_counts[lesson_date] = date_counts.get(lesson_date, 0) + 1
-            
+                lesson_date = lesson['date']
+                if lesson_date not in lessons_by_date:
+                    lessons_by_date[lesson_date] = 0
+                lessons_by_date[lesson_date] += 1
+
             # Сохранение данных в CSV файл
             with open('trial_lessons.csv', 'w', newline='') as csvfile:
                 fieldnames = ['Date', 'Number of Trial Lessons']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
-                for lesson_date, count in date_counts.items():
-                    writer.writerow({'Date': lesson_date, 'Number of Trial Lessons': count})
-            print('Список пробных уроков сохранен в trial_lessons.csv')
+                for date, count in lessons_by_date.items():
+                    writer.writerow({'Date': date, 'Number of Trial Lessons': count})
+            print('Данные о пробных уроках сохранены в trial_lessons.csv')
         else:
-            print('Ошибка получения данных о пробных уроках:', response.text)
+            print('Ошибка получения уроков:', response.text)
     else:
         print('Ошибка авторизации:', response.text)
 
