@@ -49,11 +49,25 @@ jobs:
           exit 1
         fi
 
+    - name: Run fetch_leads_with_statuses script
+      run: python fetch_leads_with_statuses.py
+      env:
+        ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
+        ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
+        ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
+
+    - name: Ensure leads statuses CSV file exists and is not empty
+      run: |
+        if [ ! -s leads_statuses.csv ]; then
+          echo "leads_statuses.csv is empty"
+          exit 1
+        fi
+
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add trial_lessons.csv leads_stage_8.csv
+        git add trial_lessons.csv leads_stage_8.csv leads_statuses.csv
         git commit -m 'Updated lessons and leads data'
         git push
       env:
