@@ -4,7 +4,7 @@ import csv
 import os
 from datetime import datetime
 
-def fetch_customers_with_status_and_source():
+def fetch_leads_with_status_and_source():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
@@ -43,7 +43,7 @@ def fetch_customers_with_status_and_source():
                 break
             
         # Сохранение данных в CSV файл
-        with open('customers_statuses_sources.csv', 'w', newline='') as csvfile:
+        with open('leads_statuses_sources.csv', 'w', newline='') as csvfile:
             fieldnames = ['customer_id', 'status_id', 'source_id', 'lead_reject_id']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
@@ -56,9 +56,9 @@ def fetch_customers_with_status_and_source():
                 })
             writer.writerow({'customer_id': 'Last updated', 'status_id': '', 'source_id': '', 'lead_reject_id': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
-        print('Список клиентов с их текущими статусами и источниками сохранен в customers_statuses_sources.csv')
+        print('Список клиентов с их текущими статусами и источниками сохранен в leads_statuses_sources.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
 if __name__ == "__main__":
-    fetch_customers_with_status_and_source()
+    fetch_leads_with_status_and_source()
