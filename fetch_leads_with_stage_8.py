@@ -22,7 +22,7 @@ def fetch_leads_with_stage_8():
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         
         payload = {
-            "entity": "Lead",
+            "entity": "Customer",
             "lead_status_id": 8
         }
         
