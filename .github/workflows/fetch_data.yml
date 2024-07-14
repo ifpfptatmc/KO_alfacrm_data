@@ -35,10 +35,6 @@ jobs:
           exit 1
         fi
 
-    - name: Add timestamp to CSV file
-      run: |
-        echo "# Last updated: $(date)" >> filtered_lessons.csv
-
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
