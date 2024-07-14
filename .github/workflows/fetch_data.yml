@@ -27,6 +27,7 @@ jobs:
         ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
         ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
+        ALPHA_CRM_ACCOUNT_ID: ${{ secrets.ALPHA_CRM_ACCOUNT_ID }}
 
     - name: Ensure CSV file exists and is not empty
       run: |
@@ -44,4 +45,3 @@ jobs:
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
