@@ -17,62 +17,48 @@ def fetch_trial_lessons():
         token = response.json().get('token')
         print('Токен:', token)
         
-        # Запрос для получения уроков
-        lessons_url = f'https://{hostname}/v2api/1/lesson/index'
-        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
+        # Установка дат
+        start_date = datetime(2024, 6, 13)
+        end_date = datetime.now() - timedelta(days=1)
+        current_date = start_date
         
-        page = 0
-        per_page = 100 # Количество записей на странице
-        lessons_data = []
+        results = []
+        
+        while current_date <= end_date:
+            date_str = current_date.strftime('%d.%m.%Y')
+            logs_url = f'https://{hostname}/v2api/1/lesson/index'
+            headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
 
-        while True:
-            lessons_params = {
-                'filters': {
-                    'lesson_type_id': 3,
-                    'status': 'finished'
-                },
-                'page': page,
-                'per-page': per_page
+            logs_params = {
+                "filters": {
+                    "lesson_type_id": 3,
+                    "status": "finished",
+                    "date_from": date_str,
+                    "date_to": date_str
+                }
             }
             
-            response = requests.post(lessons_url, headers=headers, json=lessons_params)
+            response = requests.post(logs_url, headers=headers, json=logs_params)
 
             if response.status_code == 200:
                 lessons = response.json().get('items', [])
-                if not lessons:
-                    break
-                
-                lessons_data.extend(lesson for lesson in lessons if 'date' in lesson)
-                
-                if len(lessons) < per_page:
-                    break
-
-                page += 1
+                lesson_count = len(lessons)
+                results.append({"date": date_str, "lesson_count": lesson_count})
             else:
                 print('Ошибка получения уроков:', response.text)
-                break
-
+                
+            current_date += timedelta(days=1)
+        
         # Сохранение данных в CSV файл
         with open('trial_lessons.csv', 'w', newline='') as csvfile:
-            fieldnames = ['Дата', 'Количество']
+            fieldnames = ['Date', 'Lesson Count', 'Last updated']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-
-            start_date = datetime(2024, 6, 13)
-            end_date = datetime.now() - timedelta(days=1)
-
-            lessons_by_date = {start_date + timedelta(days=i): 0 for i in range((end_date - start_date).days + 1)}
-
-            for lesson in lessons_data:
-                date = datetime.strptime(lesson['date'], '%Y-%m-%d')
-                lessons_by_date[date] += 1
-
-            for date, count in sorted(lessons_by_date.items()):
-                writer.writerow({'Дата': date.strftime('%Y-%m-%d'), 'Количество': count})
-            
-            writer.writerow({'Дата': '# Last updated', 'Количество': datetime.now().isoformat()})
+            for result in results:
+                result['Last updated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                writer.writerow(result)
         
-        print('Список пробных уроков сохранен в trial_lessons.csv')
+        print('Список уроков сохранен в trial_lessons.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
