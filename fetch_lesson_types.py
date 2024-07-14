@@ -1,4 +1,5 @@
 import requests
+import csv
 import os
 
 def fetch_lesson_types():
@@ -23,8 +24,15 @@ def fetch_lesson_types():
 
         if response.status_code == 200:
             lesson_types = response.json().get('items', [])
-            for lesson_type in lesson_types:
-                print(f"ID: {lesson_type['id']}, Name: {lesson_type['name']}")
+            
+            # Сохранение данных в CSV файл
+            with open('lesson_types.csv', 'w', newline='') as csvfile:
+                fieldnames = ['ID', 'Name']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                for lesson_type in lesson_types:
+                    writer.writerow({'ID': lesson_type['id'], 'Name': lesson_type['name']})
+            print('Список типов уроков сохранен в lesson_types.csv')
         else:
             print('Ошибка получения типов уроков:', response.text)
     else:
