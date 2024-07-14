@@ -1,12 +1,12 @@
 import requests
 import csv
 import os
-from datetime import datetime
 
 def fetch_lesson_statuses():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
+    account_id = os.getenv('ALPHA_CRM_ACCOUNT_ID')
 
     # Авторизация
     auth_url = f'https://{hostname}/v2api/auth/login'
@@ -17,12 +17,12 @@ def fetch_lesson_statuses():
         token = response.json().get('token')
         print('Токен:', token)
         
-        # Запрос статусов уроков
+        # Запрос всех возможных статусов уроков
         lesson_status_url = f'https://{hostname}/v2api/{account_id}/lesson/statuses'
-        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json'}
-
+        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
+        
         response = requests.get(lesson_status_url, headers=headers)
-
+        
         if response.status_code == 200:
             statuses = response.json()
             
