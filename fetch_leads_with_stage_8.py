@@ -23,9 +23,7 @@ def fetch_leads_with_stage_8():
         
         payload = {
             "entity": "Customer",
-            "fields_new": {
-                "lead_status_id": 8
-            }
+            "fields_new": {"lead_status_id": 8}
         }
         
         page = 0
@@ -51,12 +49,22 @@ def fetch_leads_with_stage_8():
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for log in all_logs:
-                if 'fields_new' in log and log['fields_new'].get('lead_status_id') == 8:
-                    writer.writerow({
-                        'lead_id': log.get('entity_id'),
-                        'source': log.get('source'),
-                        'date': log.get('date_time')
-                    })
+                if 'fields_new' in log:
+                    fields_new = log['fields_new']
+                    if isinstance(fields_new, list):
+                        for field in fields_new:
+                            if isinstance(field, dict) and field.get('lead_status_id') == 8:
+                                writer.writerow({
+                                    'lead_id': log.get('entity_id'),
+                                    'source': log.get('source'),
+                                    'date': log.get('date_time')
+                                })
+                    elif isinstance(fields_new, dict) and fields_new.get('lead_status_id') == 8:
+                        writer.writerow({
+                            'lead_id': log.get('entity_id'),
+                            'source': log.get('source'),
+                            'date': log.get('date_time')
+                        })
             writer.writerow({'lead_id': 'Last updated', 'source': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
         print('Список лидов со стадией 8 сохранен в leads_stage_8.csv')
