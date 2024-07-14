@@ -21,34 +21,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
 
-    - name: Run fetch_trial_lessons script
-      run: python fetch_trial_lessons.py
-      env:
-        ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
-        ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
-        ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
-
-    - name: Ensure trial lessons CSV file exists and is not empty
-      run: |
-        if [ ! -s trial_lessons.csv ]; then
-          echo "trial_lessons.csv is empty"
-          exit 1
-        fi
-
-
-    - name: Run fetch_history_changes script
-      run: python fetch_history_changes.py
-      env:
-        ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
-        ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
-        ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
-
-    - name: Ensure leads history changes CSV file exists and is not empty
-      run: |
-        if [ ! -s leads_history_changes.csv ]; then
-          echo "leads_history_changes.csv is empty"
-          exit 1
-        fi
 
     - name: Run fetch_customers_with_status_and_source script
       run: python fetch_customers_with_status_and_source.py
@@ -68,7 +40,7 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add trial_lessons.csv leads_history_changes.csv customers_statuses_sources.csv
+        git add customers_statuses_sources.csv
         git commit -m 'Updated lessons and leads data'
         git push
       env:
