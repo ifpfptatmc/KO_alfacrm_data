@@ -1,5 +1,5 @@
-customer_id,status_id,source_id,lead_reject_id
-29,4,13,
-90,4,4,
-97,4,13,
-Last updated,,,2024-07-14 14:06:52
+customer_id,status_id,source_id,custom_first_sum
+29,10,13,220
+90,10,4,220
+97,10,13,220
+Last updated,,,2024-07-14 14:17:27
