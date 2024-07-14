@@ -1,10 +1,10 @@
-name: Fetch and Update Lesson Types Data
+name: Fetch and Update Lesson Statuses Data
 
 on:
   workflow_dispatch:
 
 jobs:
-  fetch-lesson-types:
+  fetch-lesson-statuses:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,8 +21,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
 
-    - name: Run fetch_lesson_types script
-      run: python fetch_lesson_types.py
+    - name: Run fetch_lesson_statuses script
+      run: python fetch_lesson_statuses.py
       env:
         ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
         ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
@@ -30,8 +30,8 @@ jobs:
 
     - name: Ensure CSV file exists and is not empty
       run: |
-        if [ ! -s lesson_types.csv ]; then
-          echo "lesson_types.csv is empty"
+        if [ ! -s lesson_statuses.csv ]; then
+          echo "lesson_statuses.csv is empty"
           exit 1
         fi
 
@@ -39,8 +39,8 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add lesson_types.csv
-        git commit -m 'Updated lesson types data'
+        git add lesson_statuses.csv
+        git commit -m 'Updated lesson statuses data'
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
