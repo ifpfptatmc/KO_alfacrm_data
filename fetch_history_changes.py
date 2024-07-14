@@ -4,7 +4,7 @@ import csv
 import os
 from datetime import datetime
 
-def fetch_leads_with_statuses():
+def fetch_changes():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
@@ -70,4 +70,4 @@ def fetch_leads_with_statuses():
         print('Ошибка авторизации:', response.text)
 
 if __name__ == "__main__":
-    fetch_history_changes()
+    fetch_changes()
