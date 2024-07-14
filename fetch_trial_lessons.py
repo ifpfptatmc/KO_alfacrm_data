@@ -23,11 +23,18 @@ def fetch_trial_lessons():
 
         lessons_params = {
             'filters': {
+                'lesson_type_id': 3,  # Пробные уроки
+                'status': 'finished'  # Завершенные
             },
-            'fields': ['date']
+            'fields': ['date'],
+            'page': 0,
+            'page_size': 100
         }
         
         response = requests.post(lessons_url, headers=headers, json=lessons_params)
+        print('Запрос:', response.request.body)
+        print('Ответ статус-код:', response.status_code)
+        print('Ответ:', response.text)
 
         if response.status_code == 200:
             lessons = response.json().get('items', [])
