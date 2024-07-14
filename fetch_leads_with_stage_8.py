@@ -23,10 +23,9 @@ def fetch_leads_with_stage_8():
         
         payload = {
             "date_from": "01.07.2024",
-            "date_to": "07.07.2024",
+            "date_to": "14.07.2024",
             "entity": "Customer",
-            "event": 2,
-            "is_study": 0
+            "is_study": 1
         }
         
         page = 0
