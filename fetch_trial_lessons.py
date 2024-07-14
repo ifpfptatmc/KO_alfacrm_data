@@ -36,7 +36,7 @@ def fetch_trial_lessons():
             lessons_params = {
                 'filters': {
                     'lesson_type_id': 3,
-                    'status': 'finished',
+                    'status': 3,
                     'date_from': start_date.strftime('%d.%m.%Y'),
                     'date_to': end_date.strftime('%d.%m.%Y')
                 },
