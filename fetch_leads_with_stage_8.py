@@ -22,7 +22,10 @@ def fetch_leads_with_stage_8():
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         
         payload = {
+            "date_from": "01.07.2024",
+            "date_to": "07.07.2024",
             "entity": "Customer",
+            "event": 2,
             "is_study": 0
         }
         
@@ -45,7 +48,7 @@ def fetch_leads_with_stage_8():
             
         # Сохранение данных в CSV файл
         with open('leads_stage_8.csv', 'w', newline='') as csvfile:
-            fieldnames = ['lead_id', 'source', 'date']
+            fieldnames = ['lead_id']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for log in all_logs:
@@ -55,15 +58,11 @@ def fetch_leads_with_stage_8():
                         for field in fields_new:
                             if isinstance(field, dict) and field.get('lead_status_id') == 8:
                                 writer.writerow({
-                                    'lead_id': log.get('entity_id'),
-                                    'source': log.get('source'),
-                                    'date': log.get('date_time')
+                                    'lead_id': log.get('entity_id')
                                 })
                     elif isinstance(fields_new, dict) and fields_new.get('lead_status_id') == 8:
                         writer.writerow({
-                            'lead_id': log.get('entity_id'),
-                            'source': log.get('source'),
-                            'date': log.get('date_time')
+                            'lead_id': log.get('entity_id')
                         })
             writer.writerow({'lead_id': 'Last updated', 'source': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
