@@ -22,7 +22,6 @@ def fetch_leads_with_stage_8():
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         
         payload = {
-            }
         }
         
         response = requests.post(logs_url, headers=headers, data=json.dumps(payload))
