@@ -1,6 +1,7 @@
 import requests
 import csv
 import os
+from datetime import datetime
 
 def fetch_lesson_statuses():
     email = os.getenv('ALPHA_CRM_EMAIL')
@@ -17,21 +18,21 @@ def fetch_lesson_statuses():
         print('Токен:', token)
         
         # Запрос статусов уроков
-        lesson_statuses_url = f'https://{hostname}/v2api/1/lesson/status'
-        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
+        lesson_status_url = f'https://{hostname}/v2api/{account_id}/lesson/statuses'
+        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json'}
 
-        response = requests.post(lesson_statuses_url, headers=headers)
+        response = requests.get(lesson_status_url, headers=headers)
 
         if response.status_code == 200:
-            lesson_statuses = response.json().get('items', [])
+            statuses = response.json()
             
             # Сохранение данных в CSV файл
             with open('lesson_statuses.csv', 'w', newline='') as csvfile:
-                fieldnames = ['ID', 'Name']
+                fieldnames = ['status_id', 'name']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
-                for lesson_status in lesson_statuses:
-                    writer.writerow({'ID': lesson_status['id'], 'Name': lesson_status['name']})
+                for status in statuses:
+                    writer.writerow({'status_id': status['id'], 'name': status['name']})
             print('Список статусов уроков сохранен в lesson_statuses.csv')
         else:
             print('Ошибка получения статусов уроков:', response.text)
