@@ -50,7 +50,7 @@ def fetch_lessons():
             current_date += timedelta(days=1)
 
         # Сохранение данных в CSV файл
-        with open('filtered_lessons.csv', 'w', newline='') as csvfile:
+        with open('trial_lessons.csv', 'w', newline='') as csvfile:
             fieldnames = ['date', 'lesson_count']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
@@ -58,7 +58,7 @@ def fetch_lessons():
                 writer.writerow({'date': date, 'lesson_count': count})
             writer.writerow({'date': 'Last updated', 'lesson_count': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
-        print('Список уроков сохранен в filtered_lessons.csv')
+        print('Список уроков сохранен в trial_lessons.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
