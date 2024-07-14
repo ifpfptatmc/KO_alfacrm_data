@@ -28,8 +28,8 @@ def fetch_trial_lessons():
         while True:
             lessons_params = {
                 'filters': {
-                    "lesson_type_id": "3",
-                    "status": "finished"
+                    'lesson_type_id': 3,
+                    'status': 'Canceled'
                 },
                 'page': page,
                 'per-page': per_page
