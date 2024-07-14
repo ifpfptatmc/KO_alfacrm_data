@@ -3,7 +3,7 @@ name: Fetch and Update Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 14 * * *'  # 18:30 по времени Армении (GMT+4), что соответствует 14:30 по UTC
+    - cron: '41 14 * * *'  # 18:30 по времени Армении (GMT+4), что соответствует 14:30 по UTC
 
 jobs:
   fetch-data:
@@ -22,6 +22,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests
+
+    - name: Print debug info
+      run: |
+        echo "Current time: $(date)"
+        echo "Current timezone: $(date +'%Z %z')"
 
     - name: Run fetch_customers_with_status_and_source script
       run: python fetch_customers_with_status_and_source.py
