@@ -23,7 +23,7 @@ def fetch_trial_lessons():
 
         lessons_params = {
             'filters': {
-                'lesson_type_id': 3,  # Пробные уроки
+                'lesson_type_id': '3',  # Пробные уроки
                 'status': 'finished'  # Завершенные
             },
             'fields': ['date']
