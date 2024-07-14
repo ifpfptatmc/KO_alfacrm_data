@@ -1,58 +1,40 @@
-import requests
-import csv
-import os
-from datetime import datetime
+name: Fetch and Update Trial Lessons Data
 
-def fetch_trial_lessons():
-    email = os.getenv('ALPHA_CRM_EMAIL')
-    api_key = os.getenv('ALPHA_CRM_API_KEY')
-    hostname = os.getenv('ALPHA_CRM_HOSTNAME')
+on:
+  workflow_dispatch:
 
-    # Авторизация
-    auth_url = f'https://{hostname}/v2api/auth/login'
-    auth_data = {'email': email, 'api_key': api_key}
-    response = requests.post(auth_url, json=auth_data)
+jobs:
+  fetch-trial-lessons:
+    runs-on: ubuntu-latest
 
-    if response.status_code == 200:
-        token = response.json().get('token')
-        print('Токен:', token)
-        
-        # Запрос данных о пробных уроках
-        lessons_url = f'https://{hostname}/v2api/1/lesson/index'
-        headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-        filters = {
-            'lesson_type_id': 3,
-            'status': 'finished'
-        }
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
 
-        response = requests.post(lessons_url, headers=headers, json={'filters': filters})
-        print('Код ответа запроса:', response.status_code)
-        print('Ответ:', response.json())
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
 
-        if response.status_code == 200:
-            lessons = response.json().get('items', [])
-            print('Найденные уроки:', lessons)
-            lessons_by_date = {}
+    - name: Run fetch_trial_lessons script
+      run: python fetch_trial_lessons.py
+      env:
+        ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
+        ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
+        ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
 
-            for lesson in lessons:
-                lesson_date = lesson['date']
-                if lesson_date not in lessons_by_date:
-                    lessons_by_date[lesson_date] = 0
-                lessons_by_date[lesson_date] += 1
-
-            # Сохранение данных в CSV файл
-            with open('trial_lessons.csv', 'w', newline='') as csvfile:
-                fieldnames = ['Date', 'Number of Trial Lessons']
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
-                for date, count in lessons_by_date.items():
-                    writer.writerow({'Date': date, 'Number of Trial Lessons': count})
-            print('Данные о пробных уроках сохранены в trial_lessons.csv')
-        else:
-            print('Ошибка получения уроков:', response.text)
-    else:
-        print('Ошибка авторизации:', response.text)
-
-if __name__ == "__main__":
-    fetch_trial_lessons()
+    - name: Commit and push changes
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add trial_lessons.csv
+        git commit -m 'Updated trial lessons data'
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true
