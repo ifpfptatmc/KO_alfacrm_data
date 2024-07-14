@@ -24,7 +24,7 @@ def fetch_leads_with_statuses():
         data = {
             "entity": "Customer",
             "event": 1,  # Добавление
-            "lead_status_id": 8,
+            "is_study": 1,
             "page": 0  # Начальная страница
         }
         
