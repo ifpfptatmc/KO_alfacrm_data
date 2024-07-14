@@ -1,10 +1,10 @@
-name: Fetch and Update Lesson Statuses Data
+name: Fetch and Update Trial Lessons Data
 
 on:
   workflow_dispatch:
 
 jobs:
-  fetch-lesson-statuses:
+  fetch-trial-lessons:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,27 +21,23 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
 
-    - name: Run fetch_lesson_statuses script
-      run: python fetch_lesson_statuses.py
+    - name: Run fetch_trial_lessons script
+      run: python fetch_trial_lessons.py
       env:
         ALPHA_CRM_EMAIL: ${{ secrets.ALPHA_CRM_EMAIL }}
         ALPHA_CRM_API_KEY: ${{ secrets.ALPHA_CRM_API_KEY }}
         ALPHA_CRM_HOSTNAME: ${{ secrets.ALPHA_CRM_HOSTNAME }}
-        ALPHA_CRM_ACCOUNT_ID: ${{ secrets.ALPHA_CRM_ACCOUNT_ID }}
 
     - name: Ensure CSV file exists and is not empty
-      run: |
-        if [ ! -s lesson_statuses.csv ]; then
-          echo "lesson_statuses.csv is empty"
-          exit 1
-        fi
+      run: test -s trial_lessons.csv
 
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add lesson_statuses.csv
-        git commit -m 'Updated lesson statuses data'
+        git add trial_lessons.csv
+        git commit -m 'Updated trial lessons data'
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true
