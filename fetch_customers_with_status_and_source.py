@@ -23,7 +23,6 @@ def fetch_customers_with_status_and_source():
         
         data = {
             "page": 0,  # Начальная страница
-            "is_study": 0,
             "removed": 1  # Включить архивных клиентов
         }
         
