@@ -23,7 +23,7 @@ def fetch_leads_with_stage_8():
         
         payload = {
             "entity": "Customer",
-            "fields_new": {"lead_status_id": 8}
+            "event": 1  # Это тип события, означающий добавление
         }
         
         page = 0
