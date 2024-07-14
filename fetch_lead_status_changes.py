@@ -3,7 +3,7 @@ import csv
 import os
 from datetime import datetime
 
-def fetch_lead_status_changes():
+def fetch_trial_lessons():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
@@ -17,68 +17,42 @@ def fetch_lead_status_changes():
         token = response.json().get('token')
         print('Токен:', token)
         
-        # Запрос логов для получения изменений статусов лидов
-        logs_url = f'https://{hostname}/v2api/1/log/index'
+        # Запрос данных о пробных уроках
+        lessons_url = f'https://{hostname}/v2api/1/lesson/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
 
-        logs_params = {
-            'filters': {
-                'entity': 'customer',
-                'fields_new': {
-                    'lead_status_id': 4
-                },
-                'date_from': '2024-07-01',
-                'date_to': '2024-07-10'
-            },
-            'page': 0,
-            'per-page': 100
+        filters = {
+            'lesson_type_id': 3,
+            'status': 'finished'
         }
-        
-        lead_changes = []
-        
-        while True:
-            response = requests.post(logs_url, headers=headers, json=logs_params)
 
-            if response.status_code == 200:
-                logs = response.json().get('items', [])
-                if not logs:
-                    break
-                
-                for log in logs:
-                    fields_old = log.get('fields_old', [])
-                    fields_new = log.get('fields_new', [])
-                    
-                    old_status = next((field['lead_status_id'] for field in fields_old if isinstance(field, dict) and 'lead_status_id' in field), None)
-                    new_status = next((field['lead_status_id'] for field in fields_new if isinstance(field, dict) and 'lead_status_id' in field), None)
-                    
-                    if old_status is not None and new_status is not None:
-                        lead_changes.append({
-                            'Lead ID': log['entity_id'],
-                            'Old Status ID': old_status,
-                            'New Status ID': new_status,
-                            'Change Date': log['date_time']
-                        })
+        response = requests.post(lessons_url, headers=headers, json={'filters': filters})
+        print('Код ответа запроса:', response.status_code)
+        print('Ответ:', response.json())
 
-                logs_params['page'] += 1
-                if len(logs) < logs_params['per-page']:
-                    break
-            else:
-                print('Ошибка получения логов:', response.text)
-                break
+        if response.status_code == 200:
+            lessons = response.json().get('items', [])
+            print('Найденные уроки:', lessons)
+            lessons_by_date = {}
 
-        # Сохранение данных в CSV файл
-        if lead_changes:
-            with open('lead_status_changes.csv', 'w', newline='') as csvfile:
-                fieldnames = ['Lead ID', 'Old Status ID', 'New Status ID', 'Change Date']
+            for lesson in lessons:
+                lesson_date = lesson['date']
+                if lesson_date not in lessons_by_date:
+                    lessons_by_date[lesson_date] = 0
+                lessons_by_date[lesson_date] += 1
+
+            # Сохранение данных в CSV файл
+            with open('trial_lessons.csv', 'w', newline='') as csvfile:
+                fieldnames = ['Date', 'Number of Trial Lessons']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
-                for change in lead_changes:
-                    writer.writerow(change)
-            print('Список изменений статусов лидов сохранен в lead_status_changes.csv')
+                for date, count in lessons_by_date.items():
+                    writer.writerow({'Date': date, 'Number of Trial Lessons': count})
+            print('Данные о пробных уроках сохранены в trial_lessons.csv')
         else:
-            print('Изменений статусов лидов не найдено за указанный период.')
+            print('Ошибка получения уроков:', response.text)
     else:
         print('Ошибка авторизации:', response.text)
 
 if __name__ == "__main__":
-    fetch_lead_status_changes()
+    fetch_trial_lessons()
