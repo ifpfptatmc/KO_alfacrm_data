@@ -4,7 +4,7 @@ import csv
 import os
 from datetime import datetime
 
-def fetch_leads_with_stage_8():
+def fetch_leads_with_statuses():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
@@ -21,33 +21,30 @@ def fetch_leads_with_stage_8():
         logs_url = f'https://{hostname}/v2api/1/log/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         
-        payload = {
-            "date_from": "01.07.2024",
-            "date_to": "14.07.2024",
+        data = {
             "entity": "Customer",
-            "is_study": 1
+            "event": 1,  # Добавление
+            "page": 0  # Начальная страница
         }
         
-        page = 0
         all_logs = []
 
         while True:
-            payload['page'] = page
-            response = requests.post(logs_url, headers=headers, data=json.dumps(payload))
+            response = requests.post(logs_url, headers=headers, data=json.dumps(data))
 
             if response.status_code == 200:
                 logs = response.json().get('items', [])
                 if not logs:
                     break
                 all_logs.extend(logs)
-                page += 1
+                data['page'] += 1
             else:
                 print(f'Ошибка получения логов: {response.text}')
                 break
             
         # Сохранение данных в CSV файл
-        with open('leads_stage_8.csv', 'w', newline='') as csvfile:
-            fieldnames = ['lead_id']
+        with open('leads_statuses.csv', 'w', newline='') as csvfile:
+            fieldnames = ['lead_id', 'status_id']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for log in all_logs:
@@ -55,18 +52,21 @@ def fetch_leads_with_stage_8():
                     fields_new = log['fields_new']
                     if isinstance(fields_new, list):
                         for field in fields_new:
-                            if isinstance(field, dict) and field.get('lead_status_id') == 8:
+                            if isinstance(field, dict) and 'lead_status_id' in field:
                                 writer.writerow({
-                                    'lead_id': log.get('entity_id')
+                                    'lead_id': log.get('entity_id'),
+                                    'status_id': field['lead_status_id']
                                 })
-                    elif isinstance(fields_new, dict) and fields_new.get('lead_status_id') == 8:
+                    elif isinstance(fields_new, dict) and 'lead_status_id' in fields_new:
                         writer.writerow({
-                            'lead_id': log.get('entity_id')
+                            'lead_id': log.get('entity_id'),
+                            'status_id': fields_new['lead_status_id']
                         })
+            writer.writerow({'lead_id': 'Last updated', 'status_id': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
-        print('Список лидов со стадией 8 сохранен в leads_stage_8.csv')
+        print('Список лидов и их статусов сохранен в leads_statuses.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
 if __name__ == "__main__":
-    fetch_leads_with_stage_8()
+    fetch_leads_with_statuses()
