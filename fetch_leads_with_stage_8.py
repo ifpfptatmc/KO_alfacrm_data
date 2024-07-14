@@ -22,10 +22,6 @@ def fetch_leads_with_stage_8():
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         
         payload = {
-            "entity": "Customer",
-            "fields_new": {
-               "field_new" : "is_study",
-                "value_new": 1
             }
         }
         
