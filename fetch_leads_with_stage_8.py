@@ -36,13 +36,13 @@ def fetch_leads_with_stage_8():
             
             # Сохранение данных в CSV файл
             with open('leads_stage_8.csv', 'w', newline='') as csvfile:
-                fieldnames = ['lead_id', 'source', 'date']
+                fieldnames = ['lead_id', 'lead_source_id', 'date']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
                 for log in logs:
                     writer.writerow({
                         'lead_id': log.get('entity_id'),
-                        'source': log.get('source'),
+                        'source': log.get('lead_source_id'),
                         'date': log.get('created_at')
                     })
                 writer.writerow({'lead_id': 'Last updated', 'source': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
