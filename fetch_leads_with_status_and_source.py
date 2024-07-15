@@ -44,7 +44,7 @@ def fetch_leads_with_status_and_source():
             
         # Сохранение данных в CSV файл
         with open('leads_statuses_sources.csv', 'w', newline='') as csvfile:
-            fieldnames = ['customer_id', 'status_id', 'source_id', 'e_date' 'lead_reject_id']
+            fieldnames = ['customer_id', 'status_id', 'source_id', 'e_date', 'lead_reject_id']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for customer in all_customers:
