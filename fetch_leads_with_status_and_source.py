@@ -52,8 +52,8 @@ def fetch_leads_with_status_and_source():
                     'customer_id': customer.get('id'),
                     'status_id': customer.get('lead_status_id'),
                     'source_id': customer.get('lead_source_id'),
-                    'e_date': customer.get('e_date'),
-                    'lead_reject_id': customer.get('lead_reject_id')
+                    'e_date': customer.get('e_date') if 'e_date' in customer else '',
+                    'lead_reject_id': customer.get('lead_reject_id') if 'lead_reject_id' in customer else ''
                 })
             writer.writerow({'customer_id': 'Last updated', 'status_id': '', 'source_id': '', 'e_date': '', 'lead_reject_id': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
