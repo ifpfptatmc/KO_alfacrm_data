@@ -53,20 +53,22 @@ def fetch_changes():
                     if isinstance(fields_new, list):
                         for field in fields_new:
                             if isinstance(field, dict):
+                                lead_reject_id = field.get('lead_reject_id', '')
                                 writer.writerow({
                                     'lead_id': log.get('entity_id'),
-                                    'status_id': field.get('lead_status_id'),
+                                    'status_id': field.get('lead_status_id', ''),
                                     'lead_source_id': field.get('lead_source_id', ''),
                                     'e_date': field.get('e_date', ''),
-                                    'lead_reject_id': field.get('lead_reject_id', '')
+                                    'lead_reject_id': lead_reject_id
                                 })
                     elif isinstance(fields_new, dict):
+                        lead_reject_id = fields_new.get('lead_reject_id', '')
                         writer.writerow({
                             'lead_id': log.get('entity_id'),
                             'status_id': fields_new.get('lead_status_id', ''),
                             'lead_source_id': fields_new.get('lead_source_id', ''),
                             'e_date': fields_new.get('e_date', ''),
-                            'lead_reject_id': fields_new.get('lead_reject_id', '')
+                            'lead_reject_id': lead_reject_id
                         })
             writer.writerow({
                 'lead_id': 'Last updated',
