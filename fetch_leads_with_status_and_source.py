@@ -4,7 +4,7 @@ import csv
 import os
 from datetime import datetime
 
-def fetch_leads_with_status_and_source():
+def fetch_changes():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
@@ -56,17 +56,17 @@ def fetch_leads_with_status_and_source():
                                 writer.writerow({
                                     'lead_id': log.get('entity_id'),
                                     'status_id': field.get('lead_status_id'),
-                                    'lead_source_id': field.get('lead_source_id'),
-                                    'e_date': field.get('e_date'),
-                                    'lead_reject_id': field.get('lead_reject_id')
+                                    'lead_source_id': field.get('lead_source_id', ''),
+                                    'e_date': field.get('e_date', ''),
+                                    'lead_reject_id': field.get('lead_reject_id', '')
                                 })
                     elif isinstance(fields_new, dict):
                         writer.writerow({
                             'lead_id': log.get('entity_id'),
-                            'status_id': fields_new.get('lead_status_id'),
-                            'lead_source_id': fields_new.get('lead_source_id'),
-                            'e_date': fields_new.get('e_date'),
-                            'lead_reject_id': fields_new.get('lead_reject_id')
+                            'status_id': fields_new.get('lead_status_id', ''),
+                            'lead_source_id': fields_new.get('lead_source_id', ''),
+                            'e_date': fields_new.get('e_date', ''),
+                            'lead_reject_id': fields_new.get('lead_reject_id', '')
                         })
             writer.writerow({
                 'lead_id': 'Last updated',
@@ -81,4 +81,4 @@ def fetch_leads_with_status_and_source():
         print('Ошибка авторизации:', response.text)
 
 if __name__ == "__main__":
-    fetch_leads_with_status_and_source()
+    fetch_changes()
