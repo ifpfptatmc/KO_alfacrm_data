@@ -44,18 +44,18 @@ def fetch_leads_with_status_and_source():
             
         # Сохранение данных в CSV файл
         with open('leads_statuses_sources.csv', 'w', newline='') as csvfile:
-            fieldnames = ['customer_id', 'status_id', 'source_id', 'e_date', 'lead_reject_id']
+            fieldnames = ['lead_id', 'status_id', 'lead_source_id', 'e_date', 'lead_reject_id']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for customer in all_customers:
                 writer.writerow({
-                    'customer_id': customer.get('id'),
+                    'lead_id': customer.get('id'),
                     'status_id': customer.get('lead_status_id'),
-                    'source_id': customer.get('lead_source_id'),
+                    'lead_source_id': customer.get('lead_source_id'),
                     'e_date': customer.get('e_date'),
                     'lead_reject_id': customer.get('lead_reject_id')
                 })
-            writer.writerow({'customer_id': 'Last updated', 'status_id': '', 'source_id': '', 'e_date': '', 'lead_reject_id': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+            writer.writerow({'lead_id': 'Last updated', 'status_id': '', 'lead_source_id': '', 'e_date': '', 'lead_reject_id': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
         print('Список клиентов с их текущими статусами и источниками сохранен в leads_statuses_sources.csv')
     else:
