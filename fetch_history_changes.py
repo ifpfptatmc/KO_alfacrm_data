@@ -43,7 +43,7 @@ def fetch_changes():
             
         # Сохранение данных в CSV файл
         with open('leads_history_changes.csv', 'w', newline='') as csvfile:
-            fieldnames = ['lead_id', 'status_id', 'date']
+            fieldnames = ['lead_id', 'status_id', 'lead_reject_id', 'date']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for log in all_logs:
@@ -51,19 +51,21 @@ def fetch_changes():
                     fields_new = log['fields_new']
                     if isinstance(fields_new, list):
                         for field in fields_new:
-                            if isinstance(field, dict) and 'lead_status_id' in field:
+                            if isinstance(field, dict):
                                 writer.writerow({
                                     'lead_id': log.get('entity_id'),
-                                    'status_id': field['lead_status_id'],
+                                    'status_id': field.get('lead_status_id', ''),
+                                    'lead_reject_id': field.get('lead_reject_id', ''),
                                     'date': log.get('date_time')
                                 })
-                    elif isinstance(fields_new, dict) and 'lead_status_id' in fields_new:
+                    elif isinstance(fields_new, dict):
                         writer.writerow({
                             'lead_id': log.get('entity_id'),
-                            'status_id': fields_new['lead_status_id'],
+                            'status_id': fields_new.get('lead_status_id', ''),
+                            'lead_reject_id': fields_new.get('lead_reject_id', ''),
                             'date': log.get('date_time')
                         })
-            writer.writerow({'lead_id': 'Last updated', 'status_id': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+            writer.writerow({'lead_id': 'Last updated', 'status_id': '', 'lead_reject_id': '', 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
         print('Список лидов и их статусов сохранен в leads_history_changes.csv')
     else:
