@@ -43,7 +43,7 @@ def fetch_changes():
                 break
 
         # Сохранение данных в CSV файл
-        with open('leads_history_changes.csv', 'w', newline='') as csvfile:
+        with open('leads_statuses_sources.csv', 'w', newline='') as csvfile:
             fieldnames = ['lead_id', 'status_id', 'lead_source_id', 'e_date', 'lead_reject_id']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
@@ -78,7 +78,7 @@ def fetch_changes():
                 'lead_reject_id': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             })
 
-        print('Список изменений статусов лидов сохранен в leads_history_changes.csv')
+        print('Список изменений статусов лидов сохранен в leads_statuses_sources.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
