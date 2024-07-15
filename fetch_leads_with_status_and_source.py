@@ -4,7 +4,7 @@ import csv
 import os
 from datetime import datetime
 
-def fetch_changes():
+def fetch_leads_with_status_and_source():
     email = os.getenv('ALPHA_CRM_EMAIL')
     api_key = os.getenv('ALPHA_CRM_API_KEY')
     hostname = os.getenv('ALPHA_CRM_HOSTNAME')
@@ -18,68 +18,48 @@ def fetch_changes():
         token = response.json().get('token')
         print('Токен:', token)
         
-        logs_url = f'https://{hostname}/v2api/1/log/index'
+        customers_url = f'https://{hostname}/v2api/1/customer/index'
         headers = {'X-ALFACRM-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         
         data = {
-            "entity": "Customer",
-            "page": 0  # Начальная страница
+            "page": 0,  # Начальная страница
+            "is_study": 0,
+            "removed": 1  # Включить архивных клиентов
         }
         
-        all_logs = []
+        all_customers = []
 
         while True:
-            response = requests.post(logs_url, headers=headers, data=json.dumps(data))
+            response = requests.post(customers_url, headers=headers, data=json.dumps(data))
 
             if response.status_code == 200:
-                logs = response.json().get('items', [])
-                if not logs:
+                customers = response.json().get('items', [])
+                if not customers:
                     break
-                all_logs.extend(logs)
+                all_customers.extend(customers)
                 data['page'] += 1
             else:
-                print(f'Ошибка получения логов: {response.text}')
+                print(f'Ошибка получения данных клиентов: {response.text}')
                 break
-
+            
         # Сохранение данных в CSV файл
         with open('leads_statuses_sources.csv', 'w', newline='') as csvfile:
-            fieldnames = ['lead_id', 'status_id', 'lead_source_id', 'e_date', 'lead_reject_id']
+            fieldnames = ['customer_id', 'status_id', 'source_id', 'e_date' 'lead_reject_id']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            for log in all_logs:
-                if 'fields_new' in log:
-                    fields_new = log['fields_new']
-                    if isinstance(fields_new, list):
-                        for field in fields_new:
-                            if isinstance(field, dict):
-                                lead_reject_id = field.get('lead_reject_id', '')
-                                writer.writerow({
-                                    'lead_id': log.get('entity_id'),
-                                    'status_id': field.get('lead_status_id', ''),
-                                    'lead_source_id': field.get('lead_source_id', ''),
-                                    'e_date': field.get('e_date', ''),
-                                    'lead_reject_id': lead_reject_id
-                                })
-                    elif isinstance(fields_new, dict):
-                        lead_reject_id = fields_new.get('lead_reject_id', '')
-                        writer.writerow({
-                            'lead_id': log.get('entity_id'),
-                            'status_id': fields_new.get('lead_status_id', ''),
-                            'lead_source_id': fields_new.get('lead_source_id', ''),
-                            'e_date': fields_new.get('e_date', ''),
-                            'lead_reject_id': lead_reject_id
-                        })
-            writer.writerow({
-                'lead_id': 'Last updated',
-                'status_id': '',
-                'lead_source_id': '',
-                'e_date': '',
-                'lead_reject_id': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            })
+            for customer in all_customers:
+                writer.writerow({
+                    'customer_id': customer.get('id'),
+                    'status_id': customer.get('lead_status_id'),
+                    'source_id': customer.get('lead_source_id'),
+                    'e_date': customer.get('e_date'),
+                    'lead_reject_id': customer.get('lead_reject_id')
+                })
+            writer.writerow({'customer_id': 'Last updated', 'status_id': '', 'source_id': '', 'e_date': '', 'lead_reject_id': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
-        print('Список изменений статусов лидов сохранен в leads_statuses_sources.csv')
+        print('Список клиентов с их текущими статусами и источниками сохранен в leads_statuses_sources.csv')
     else:
         print('Ошибка авторизации:', response.text)
 
 if __name__ == "__main__":
-    fetch_changes()
+    fetch_leads_with_status_and_source()
