@@ -23,7 +23,6 @@ def fetch_changes():
         
         data = {
             "entity": "Customer",
-            "lead_source_id": 5,
             "page": 0  # Начальная страница
         }
         
