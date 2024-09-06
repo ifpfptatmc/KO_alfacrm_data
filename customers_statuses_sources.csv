@@ -1,5 +1,13 @@
 customer_id,status_id,source_id,custom_first_sum,custom_first_tariff
+69,6,2,,"0e/month (sale) (0,00 / month)"
+107,10,13,90,"90e/month (sale, 3 lessons) (90,00 / month)"
+206,,5,,"60e/month (sale, 3 lessons) (60,00 / month)"
 29,10,13,220,"220e/week Poletni tečaj (220,00 / week)"
 90,10,4,220,"220e/week Poletni tečaj (220,00 / week)"
+339,10,5,,"120e/month (sale) (120,00 / month)"
 97,10,13,220,"220e/week Poletni tečaj (220,00 / week)"
-Last updated,,,2024-09-06 02:12:08,
+316,10,13,,"120e/month (sale) (120,00 / month)"
+193,10,5,,"60e/month (sale, 3 lessons) (60,00 / month)"
+324,10,2,114,"114e/month (sale) - 5% (114,00 / month)"
+320,10,5,,"90e/month (sale, 3 lessons) (90,00 / month)"
+Last updated,,,2024-09-06 11:40:57,
