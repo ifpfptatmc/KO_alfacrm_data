@@ -44,7 +44,7 @@ def fetch_customers_with_status_and_source():
             
         # Сохранение данных в CSV файл
         with open('customers_statuses_sources.csv', 'w', newline='') as csvfile:
-            fieldnames = ['customer_id', 'status_id', 'source_id', 'custom_first_sum', 'custom_first_tariff', datakontrakta]
+            fieldnames = ['customer_id', 'status_id', 'source_id', 'custom_first_sum', 'custom_first_tariff', 'datakontrakta']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for customer in all_customers:
