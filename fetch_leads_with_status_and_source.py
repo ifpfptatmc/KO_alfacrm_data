@@ -56,7 +56,7 @@ def fetch_leads_with_status_and_source():
                     'lead_reject_id': customer.get('lead_reject_id'),
                     'custom_datarezidentstva': customer.get('custom_datarezidentstva')  # Новое поле datano
                 })
-            writer.writerow({'lead_id': 'Last updated', 'status_id': '', 'lead_source_id': '', 'e_date': '', 'lead_reject_id': '', 'datano': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+            writer.writerow({'lead_id': 'Last updated', 'status_id': '', 'lead_source_id': '', 'e_date': '', 'lead_reject_id': '', 'custom_datarezidentstva': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
         print('Список клиентов с их текущими статусами и источниками сохранен в leads_statuses_sources.csv')
     else:
