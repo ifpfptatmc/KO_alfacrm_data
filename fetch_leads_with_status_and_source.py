@@ -44,7 +44,7 @@ def fetch_leads_with_status_and_source():
             
         # Сохранение данных в CSV файл
         with open('leads_statuses_sources.csv', 'w', newline='') as csvfile:
-            fieldnames = ['lead_id', 'status_id', 'lead_source_id', 'e_date', 'lead_reject_id', 'datano']
+            fieldnames = ['lead_id', 'status_id', 'lead_source_id', 'e_date', 'lead_reject_id', 'custom_datarezidentstva']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for customer in all_customers:
@@ -54,7 +54,7 @@ def fetch_leads_with_status_and_source():
                     'lead_source_id': customer.get('lead_source_id'),
                     'e_date': customer.get('e_date'),
                     'lead_reject_id': customer.get('lead_reject_id'),
-                    'datano': customer.get('custom_datano')  # Новое поле datano
+                    'custom_datarezidentstva': customer.get('custom_datarezidentstva')  # Новое поле datano
                 })
             writer.writerow({'lead_id': 'Last updated', 'status_id': '', 'lead_source_id': '', 'e_date': '', 'lead_reject_id': '', 'datano': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
