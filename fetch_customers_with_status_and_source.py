@@ -44,7 +44,7 @@ def fetch_customers_with_status_and_source():
             
         # Сохранение данных в CSV файл
         with open('customers_statuses_sources.csv', 'w', newline='') as csvfile:
-            fieldnames = ['customer_id', 'status_id', 'source_id', 'custom_first_sum', 'custom_first_tariff', 'custom_datakontrakta', 'custom_datano']
+            fieldnames = ['customer_id', 'status_id', 'source_id', 'custom_first_sum', 'custom_first_tariff', 'custom_datakontrakta', 'custom_datarezidentstva']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for customer in all_customers:
@@ -55,9 +55,9 @@ def fetch_customers_with_status_and_source():
                     'custom_first_sum': customer.get('custom_first_sum'),
                     'custom_first_tariff': customer.get('custom_first_tariff'),
                     'custom_datakontrakta': customer.get('custom_datakontrakta'),
-                    'custom_datano': customer.get('custom_datano')  # Новое поле custom_datano
+                    'custom_datarezidentstva': customer.get('custom_datarezidentstva')  # Новое поле custom_datano
                 })
-            writer.writerow({'customer_id': 'Last updated', 'status_id': '', 'source_id': '', 'custom_first_sum': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'custom_first_tariff': '', 'custom_datakontrakta': '', 'custom_datano': ''})
+            writer.writerow({'customer_id': 'Last updated', 'status_id': '', 'source_id': '', 'custom_first_sum': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'custom_first_tariff': '', 'custom_datakontrakta': '', 'custom_datarezidentstva': ''})
 
         print('Список клиентов с их текущими статусами, источниками и тарифами сохранен в customers_statuses_sources.csv')
     else:
