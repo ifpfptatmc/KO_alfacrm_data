@@ -24,6 +24,7 @@ customer_id,status_id,source_id,custom_first_sum,custom_first_tariff,custom_data
 241,4,2,60,"60e/month (sale, 3 lessons) (60,00 / month)",17.09.2024,17.09.2024
 409,4,4,120,"120e/month (sale) (120,00 / month)",09.09.2024,09.09.2024
 167,4,2,90,"90e/month (sale, 3 lessons) (90,00 / month)",14.09.2024,05.09.2024
+488,4,2,,,,
 424,4,4,,,,
 362,4,5,120,"120e/month (sale) (120,00 / month)",10.09.2024,09.09.2024
 257,4,4,,,,05.09.2024
@@ -33,4 +34,4 @@ customer_id,status_id,source_id,custom_first_sum,custom_first_tariff,custom_data
 335,4,2,86,"90e/month (sale, 3 lessons) (90,00 / month)",17.09.2024,11.09.2024
 320,4,5,90,"90e/month (sale, 3 lessons) (90,00 / month)",06.09.2024,06.09.2024
 425,4,5,90,"90e/month (sale, 3 lessons) (90,00 / month)",17.09.2024,14.09.2024
-Last updated,,,2024-10-10 02:18:12,,,
+Last updated,,,2024-10-11 02:17:21,,,
