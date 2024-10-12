@@ -33,7 +33,7 @@ lead_id,status_id,lead_source_id,e_date,lead_reject_id,custom_datarezidentstva
 464,1,5,2024-10-01,6,
 463,1,5,2024-09-27,11,
 461,1,5,2024-10-01,6,
-460,1,5,2030-12-31,,
+460,11,5,2030-12-31,,
 458,1,13,2024-09-24,6,
 457,,12,2024-09-17,9,
 456,11,4,2030-12-31,,
@@ -456,4 +456,4 @@ lead_id,status_id,lead_source_id,e_date,lead_reject_id,custom_datarezidentstva
 3,,,2024-06-13,7,
 2,5,,2024-06-13,7,
 1,,,2024-06-13,7,
-Last updated,,,,,2024-10-11 02:17:35
+Last updated,,,,,2024-10-12 02:15:48
