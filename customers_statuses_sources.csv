@@ -11,6 +11,7 @@ customer_id,status_id,source_id,custom_first_sum,custom_first_tariff,custom_data
 475,4,12,,,,
 396,4,12,120,"120e/month (sale) (120,00 / month)",16.09.2024,09.09.2024
 459,4,12,60,"60e/month (sale, 3 lessons) (60,00 / month)",21.09.2024,21.09.2024
+505,,,0,"0e/month (sale) (0,00 / month)",,07.12.2024
 193,4,5,60,"60e/month (sale, 3 lessons) (60,00 / month)",06.09.2024,05.09.2024
 29,10,13,220,"220e/week Poletni tečaj (220,00 / week)",08.07.2024,03.07.2024
 90,10,4,220,"220e/week Poletni tečaj (220,00 / week)",08.07.2024,03.07.2024
@@ -37,4 +38,4 @@ customer_id,status_id,source_id,custom_first_sum,custom_first_tariff,custom_data
 335,4,2,86,"90e/month (sale, 3 lessons) (90,00 / month)",17.09.2024,11.09.2024
 320,4,5,90,"90e/month (sale, 3 lessons) (90,00 / month)",06.09.2024,06.09.2024
 425,4,5,90,"90e/month (sale, 3 lessons) (90,00 / month)",17.09.2024,14.09.2024
-Last updated,,,2024-12-07 02:26:40,,,
+Last updated,,,2024-12-08 02:42:02,,,
