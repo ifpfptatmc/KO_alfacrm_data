@@ -1,5 +1,5 @@
 lead_id,status_id,lead_source_id,e_date,lead_reject_id,custom_datarezidentstva
-506,6,,2030-12-31,,21.12.2024
+506,6,,2025-04-28,,21.12.2024
 501,11,3,2030-12-31,,
 434,5,5,2030-12-31,,
 499,11,4,2030-12-31,,
@@ -452,4 +452,4 @@ lead_id,status_id,lead_source_id,e_date,lead_reject_id,custom_datarezidentstva
 3,,,2024-06-13,7,
 2,5,,2024-06-13,7,
 1,,,2024-06-13,7,
-Last updated,,,,,2025-04-28 02:46:30
+Last updated,,,,,2025-04-29 02:40:42
